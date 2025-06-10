@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  monitor:
+    build:  .
+    container_name: backup_monitor
+  
+    volumes:
+      - ./backups:/mnt/backups
+    
+    ports:
+      - "8000:8000"
+
+    restart: unless-stoped
