@@ -1,13 +1,21 @@
 version: '3.8'
+
 services:
-  monitor:
-    build:  .
-    container_name: backup_monitor
-  
-    volumes:
-      - ./backups:/mnt/backups
-    
+  app:
+    build: .
     ports:
       - "8000:8000"
+    volumes:
+      - ./app:/app
+      - backup_storage:/mnt/backups
+      - sqlite_data:/app/data/db
+    environment:
+      DATABASE_URL: "sqlite:///./data/db/sql_app.db"
+      SMTP_SERVER: "smtp.example.com"
+      SMTP_PORT: "587"
+      SMTP_USER: "your_email@example.com"
+      SMTP_PASSWORD: "your_email_password_here"
 
-    restart: unless-stoped
+volumes:
+  backup_storage:
+  sqlite_data:

@@ -1,4 +1,25 @@
-fastapi
-uvicorn
-sqlmodel
-apscheduler
+# requirements.txt
+# Fichier listant toutes les dépendances Python nécessaires pour le projet.
+# Elles seront installées dans l'environnement Docker.
+
+# FastAPI et Uvicorn (serveur ASGI pour FastAPI)
+fastapi==0.111.0
+uvicorn[standard]==0.34.3
+
+# SQLAlchemy (ORM pour interagir avec la base de données)
+SQLAlchemy==2.0.30
+
+# APScheduler (pour planifier les tâches du scanner)
+APScheduler==3.10.4
+
+# Pour la future connexion à PostgreSQL (déjà inclus pour anticiper la migration)
+# psycogp2-binary est le driver PostgreSQL pour Python
+psycopg2-binary==2.9.9
+
+# Pour le parsing JSON (généralement déjà géré par Python ou FastAPI, mais explicitons si des fonctions spécifiques sont utilisées)
+# Pas besoin d'une ligne spécifique pour 'json' si vous utilisez la bibliothèque standard de Python.
+# Si vous aviez des besoins plus avancés (ex: Pydantic pour la validation des schémas JSON), ce serait ici.
+# Comme nos STATUS.json sont simples, les libs de base suffisent.
+# Ajout de Pydantic pour la configuration des settings (car prévu dans ta structure)
+pydantic==2.8.2
+pydantic-settings==2.3.4 # Pour BaseSettings et la gestion des .env
