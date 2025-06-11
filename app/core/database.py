@@ -2,7 +2,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from config.settings import settings
 
-SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL
+import os
+print(f"Chemin absolu de la base : {os.path.abspath('./data/db/sql_app.db')}")
+
+
+SQLALCHEMY_DATABASE_URL =   settings.DATABASE_URL
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
     echo=True,

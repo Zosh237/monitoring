@@ -52,6 +52,67 @@ test_backup_scanner.py
 
 **Livrable J1 :** DB + Parser + Scanner basique fonctionnels
 
+# === RAPPORT DE FIN JOUR 1 ===
+
+## 1. Analyse des fichiers principaux
+
+### a) `app/models/models.py`
+- Définit deux tables principales : `ExpectedBackupJob` (configuration attendue des sauvegardes) et `BackupEntry` (résultat d'une sauvegarde).
+- Utilise SQLAlchemy ORM, des Enum pour les statuts, et des contraintes d'unicité pertinentes.
+- Structure adaptée au MVP, conforme au plan (SUCCESS/FAILED/MISSING, pas de gestion avancée des erreurs ni de hash complexe pour l'instant).
+
+### b) `app/core/database.py`
+- Configure la connexion à la base via SQLAlchemy, en utilisant les settings Pydantic.
+- Fournit la session et la base déclarative pour les modèles.
+- Affiche le chemin absolu de la base pour le debug.
+
+### c) `config/settings.py`
+- Centralise la configuration (URL de la base, racine des backups, intervalle du scanner, jours attendus, timezone, etc.).
+- Utilise Pydantic pour charger les variables d'environnement et un .env.
+- Prêt pour extension future (Docker, prod, etc.).
+
+### d) `config/logging.yaml`
+- Définit une configuration de logging robuste (console + fichier, rotation, formats détaillés).
+- Prêt pour usage en dev et prod.
+
+### e) `scripts/init_database.py`
+- Script d'initialisation de la base : importe les modèles, crée les tables si besoin.
+- Utilise `Base.metadata.create_all(bind=engine)`.
+
+## 2. Problème rencontré
+
+- **Erreur lors de l'exécution de `scripts/init_database.py` :**
+  - `ModuleNotFoundError: No module named 'app'`
+  - Cause : le script était lancé directement (`python scripts/init_database.py`), ce qui ne permet pas à Python de reconnaître le dossier `app` comme un package (problème de PYTHONPATH).
+
+## 3. Correction apportée
+
+- **Solution :**
+  - Exécuter le script comme un module avec le flag `-m` :
+    ```bash
+    venv\Scripts\python -m scripts.init_database
+    ```
+  - Cela permet à Python de traiter le projet comme un package, rendant les imports relatifs fonctionnels.
+  - Résultat :
+    - Connexion à la base réussie
+    - Création des tables sans erreur
+    - Logs SQLAlchemy affichés
+
+## 4. Conseils et bonnes pratiques
+
+- Toujours exécuter les scripts qui importent des modules du projet avec `-m` depuis la racine du projet.
+- Vérifier que l'environnement virtuel est activé et que toutes les dépendances sont installées (`pip install -r requirements.txt`).
+- Pour les tests automatisés, utiliser la même logique d'import.
+
+## 5. Prochaines étapes (Jour 2)
+- Développer le parser STATUS.json et le scanner de sauvegardes.
+- Écrire les premiers tests unitaires sur la base et le parser.
+- Continuer à travailler dans l'environnement virtuel pour garantir l'isolation des dépendances.
+
+---
+
+**Fin du rapport d'activité – Jour 1.**
+
 ---
 
 ### **JOUR 2 : Logique Métier Core (8h)**

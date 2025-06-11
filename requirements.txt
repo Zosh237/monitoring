@@ -7,14 +7,15 @@ fastapi==0.111.0
 uvicorn[standard]==0.34.3
 
 # SQLAlchemy (ORM pour interagir avec la base de données)
-SQLAlchemy==2.0.30
+#SQLAlchemy==2.0.30
+SQLAlchemy==1.4.46
 
 # APScheduler (pour planifier les tâches du scanner)
 APScheduler==3.10.4
 
 # Pour la future connexion à PostgreSQL (déjà inclus pour anticiper la migration)
 # psycogp2-binary est le driver PostgreSQL pour Python
-psycopg2-binary==2.9.9
+#psycopg2-binary==2.9.9
 
 # Pour le parsing JSON (généralement déjà géré par Python ou FastAPI, mais explicitons si des fonctions spécifiques sont utilisées)
 # Pas besoin d'une ligne spécifique pour 'json' si vous utilisez la bibliothèque standard de Python.
