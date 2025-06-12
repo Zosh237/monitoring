@@ -1,41 +1,50 @@
+# app/models/models.py
+# Ce fichier définit les modèles de base de données (tables) pour l'application de monitoring des sauvegardes.
+
 from datetime import datetime
-from enum import Enum
+import enum
 from sqlalchemy import Column, Integer, String, DateTime, Enum as SQLEnum, Text, ForeignKey, BigInteger, Boolean, UniqueConstraint
 from sqlalchemy.orm import relationship
+
+# Importe la classe de base déclarative.
 from app.core.database import Base
 
 # --- Définition des Enums ---
-class JobStatus(str, Enum):
+
+class JobStatus(str, enum.Enum):
     OK = "ok"
     FAILED = "failed"
     MISSING = "missing"
     HASH_MISMATCH = "hash_mismatch"
+    TRANSFER_INTEGRITY_FAILED = "transfer_integrity_failed"
     UNKNOWN = "unknown"
 
-class BackupFrequency(str, Enum):
+class BackupFrequency(str, enum.Enum):
     DAILY = "daily"
     WEEKLY = "weekly"
     MONTHLY = "monthly"
     HOURLY = "hourly"
-    ONCE = 'once'
+    ONCE = "once"
 
-class BackupEntryStatus(str, Enum):
+class BackupEntryStatus(str, enum.Enum):
     SUCCESS = "success"
     FAILED = "failed"
     MISSING = "missing"
     HASH_MISMATCH = "hash_mismatch"
+    TRANSFER_INTEGRITY_FAILED = "transfer_integrity_failed"
+
 
 # --- TABLE 1: ExpectedBackupJob ---
 class ExpectedBackupJob(Base):
     __tablename__ = "expected_backup_jobs"
-    
+
     id = Column(Integer, primary_key=True, index=True)
-    year = Column(Integer, nullable=False)
-    company_name = Column(String, nullable=False, index=True)
-    city = Column(String, nullable=False, index=True)
-    database_name = Column(String, nullable=False, index=True)
-    expected_hour_utc = Column(Integer, nullable=False)
-    expected_minute_utc = Column(Integer, nullable=False)
+    year = Column(Integer, nullable=False, comment="Année (ex: 2025)")
+    company_name = Column(String, nullable=False, index=True, comment="Nom de l'entreprise")
+    city = Column(String, nullable=False, index=True, comment="Ville de l'agence")
+    database_name = Column(String, nullable=False, index=True, comment="Nom de la base de données")
+    expected_hour_utc = Column(Integer, nullable=False, comment="Heure attendue de fin de sauvegarde (UTC)")
+    expected_minute_utc = Column(Integer, nullable=False, comment="Minute attendue de fin de sauvegarde (UTC)")
     
     __table_args__ = (
         UniqueConstraint('year', 'company_name', 'city', 'database_name',
@@ -43,8 +52,13 @@ class ExpectedBackupJob(Base):
                        name='_unique_job_config'),
     )
 
-    expected_storage_base_path = Column(String, nullable=False)
-    expected_frequency = Column(SQLEnum(*[f.value for f in BackupFrequency]), nullable=False)  # Correction ici
+    # Chemins de stockage pour l'agent et la destination finale
+    agent_id_responsible = Column(String, nullable=False, index=True, comment="ID de l'agent responsable de ce job")
+    agent_deposit_path_template = Column(String, nullable=False, comment="Template du chemin de dépôt des fichiers de BD par l'agent")
+    agent_log_deposit_path_template = Column(String, nullable=False, comment="Template du chemin de dépôt du fichier STATUS.json par l'agent")
+    final_storage_path_template = Column(String, nullable=False, comment="Template du chemin final de stockage des sauvegardes validées")
+
+    expected_frequency = Column(SQLEnum(*[f.value for f in BackupFrequency]), nullable=False)
     days_of_week = Column(String, nullable=False)
     current_status = Column(SQLEnum(*[s.value for s in JobStatus]), default=JobStatus.UNKNOWN.value, nullable=False)
     last_checked_timestamp = Column(DateTime, nullable=True)
@@ -54,32 +68,65 @@ class ExpectedBackupJob(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    backup_entries = relationship("BackupEntry", back_populates="expected_job", order_by="desc(BackupEntry.timestamp)")
+    backup_entries = relationship("BackupEntry", back_populates="expected_job", order_by="desc(BackupEntry.timestamp)", lazy=True)
 
     def __repr__(self):
         return (f"<ExpectedBackupJob(company='{self.company_name}', city='{self.city}', "
-                f"db='{self.database_name}', year={self.year}, "
+                f"db='{self.database_name}', year={self.year}, agent='{self.agent_id_responsible}', "
                 f"expected_time={self.expected_hour_utc:02d}:{self.expected_minute_utc:02d} UTC, "
-                f"status='{self.current_status}')>")
+                f"status='{self.current_status.value}')>")
 
 # --- TABLE 2: BackupEntry ---
 class BackupEntry(Base):
+    """
+    Modèle de base de données pour l'historique des événements de sauvegarde.
+    Chaque entrée enregistre les rapports de l'agent et les validations du serveur.
+    """
     __tablename__ = "backup_entries"
 
     id = Column(Integer, primary_key=True, index=True)
     expected_job_id = Column(Integer, ForeignKey("expected_backup_jobs.id"), nullable=False, index=True)
-    expected_job = relationship("ExpectedBackupJob", back_populates="backup_entries")
-    timestamp = Column(DateTime, default=datetime.utcnow, nullable=False)
-    status = Column(SQLEnum(*[s.value for s in BackupEntryStatus]), nullable=False, index=True)  # Correction ici
-    message = Column(Text, nullable=True)
-    log_file_name = Column(String, nullable=True)
-    backup_file_name = Column(String, nullable=True)
-    file_size_bytes = Column(BigInteger, nullable=True)
-    checksum_sha256 = Column(String(64), nullable=True, index=True)
-    previous_checksum_sha256 = Column(String(64), nullable=True)
-    hash_comparison_result = Column(Boolean, nullable=True)
+    expected_job = relationship("ExpectedBackupJob", back_populates="backup_entries") # Correction ici du back_populates
+
+    timestamp = Column(DateTime, default=datetime.utcnow, nullable=False, comment="Horodatage de la détection par le serveur")
+    status = Column(SQLEnum(*[s.value for s in BackupEntryStatus]), nullable=False, index=True)
+    message = Column(Text, nullable=True, comment="Message détaillé sur l'événement")
+    
+    # Champs provenant du rapport STATUS.json de l'agent
+    operation_log_file_name = Column(String, nullable=True, comment="Nom du fichier STATUS.json global ayant déclenché cette entrée")
+    agent_id = Column(String, nullable=True, comment="ID de l'agent ayant produit le rapport")
+    agent_overall_status = Column(String, nullable=True, comment="Statut global de l'opération rapporté par l'agent")
+
+    agent_backup_process_status = Column(Boolean, nullable=True)
+    agent_backup_process_start_time = Column(DateTime, nullable=True)
+    agent_backup_process_timestamp = Column(DateTime, nullable=True)
+    agent_backup_hash_pre_compress = Column(String(64), nullable=True)
+    agent_backup_size_pre_compress = Column(BigInteger, nullable=True)
+
+    agent_compress_process_status = Column(Boolean, nullable=True)
+    agent_compress_process_start_time = Column(DateTime, nullable=True)
+    agent_compress_process_timestamp = Column(DateTime, nullable=True)
+    agent_compress_hash_post_compress = Column(String(64), nullable=True)
+    agent_compress_size_post_compress = Column(BigInteger, nullable=True)
+
+    agent_transfer_process_status = Column(Boolean, nullable=True)
+    agent_transfer_process_start_time = Column(DateTime, nullable=True)
+    agent_transfer_process_timestamp = Column(DateTime, nullable=True)
+    agent_transfer_error_message = Column(Text, nullable=True)
+    agent_staged_file_name = Column(String, nullable=True)
+    agent_logs_summary = Column(Text, nullable=True)
+
+    # Champs de validation côté serveur
+    server_calculated_staged_hash = Column(String(64), nullable=True, comment="Hachage du fichier dans la zone de dépôt calculé par le serveur")
+    server_calculated_staged_size = Column(BigInteger, nullable=True, comment="Taille du fichier dans la zone de dépôt calculée par le serveur")
+
+    # Vérification de Hachage pour HASH_MISMATCH
+    previous_successful_hash_global = Column(String(64), nullable=True, comment="Hachage de la dernière sauvegarde globale réussie pour cette BD")
+    hash_comparison_result = Column(Boolean, nullable=True, comment="Résultat de la comparaison des hachages (True si différent, False si identique)")
+
     created_at = Column(DateTime, default=datetime.utcnow)
 
     def __repr__(self):
-        return (f"<BackupEntry(job_id={self.expected_job_id}, status='{self.status}', "
-                f"timestamp='{self.timestamp}', hash_ok={self.hash_comparison_result})>")
+        return (f"<BackupEntry(job_id={self.expected_job_id}, status='{self.status.value}', "
+                f"timestamp='{self.timestamp}', agent_status={self.agent_transfer_process_status}, "
+                f"server_hash_ok={self.hash_comparison_result})>")

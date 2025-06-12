@@ -1,0 +1,36 @@
+{
+    "operation_start_time": "2025-06-12T20:00:00Z", // Horodatage global du début de l'opération (UTC)
+    "operation_timestamp": "2025-06-12T20:00:00Z", // Horodatage global de fin de l'opération (UTC),
+    "agent_id": "agent_douala_prod_01",         // Identifiant de l'agent qui a envoyé le rapport (optionnel mais utile)
+    "overall_status": "completed",              // "completed" ou "failed_globally" si un problème majeur a empêché l'envoi de tous les rapports individuels
+
+    "databases": {                              // Dictionnaire des statuts par base de données
+        "DATABASE_NAME_1": {
+            "backup_process": {                // Processus de dump de la BD sur la source
+                "status": true,                // true si le dump a réussi
+                "backup_process_start_time": "2025-06-12T19:50:00Z" , // Heure de début du processus de backup
+                "timestamp": "2025-06-12T19:50:00Z", // Timestamp du dump
+                "sha256_checksum": "hash_pre_compress", // Hachage du fichier dumpé AVANT compression/ZTDS
+                "size_bytes": 123456789         // Taille du fichier dumpé AVANT compression/ZTDS
+            },
+            "compress_process": {              // Processus de compression/ZTDS_Resynchable
+                "status": true,
+                "compress_process_start_time": "2025-06-12T19:50:00Z" , // Heure de début du processus de compression
+                "timestamp": "2025-06-12T19:55:00Z", // Timestamp de la compression
+                "sha256_checksum": "hash_post_compress", // Hachage du fichier APRES compression/ZTDS (celui qui sera rsync'é)
+                "size_bytes": 567890             // Taille du fichier APRES compression/ZTDS
+            },
+            "transfer_process": {              // Processus rsync vers la zone de staging
+                "status": true,                // true si le rsync a réussi
+                "transfer_process_start_time": "2025-06-12T19:50:00Z",  // Heure de début du processus de transfert
+                "timestamp": "2025-06-12T20:00:00Z", // Timestamp de fin de transfert
+                "error_message": null          // Message d'erreur si transfer.status est false
+            },
+            "staged_file_name": "compta_db.sql.gz" // Nom du fichier tel qu'il a été envoyé et est dans la zone de staging (Zone ou tu stockeras les données sur serveur)
+        },
+
+        "DATABASE_NAME_2": {
+            // ... Mêmes champs pour la BD 2
+        }
+    }
+}
