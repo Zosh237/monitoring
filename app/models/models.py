@@ -42,12 +42,13 @@ class ExpectedBackupJob(Base):
     year = Column(Integer, nullable=False, comment="Année (ex: 2025)")
     company_name = Column(String, nullable=False, index=True, comment="Nom de l'entreprise")
     city = Column(String, nullable=False, index=True, comment="Ville de l'agence")
+    neighborhood = Column(String, nullable=False, index=True, comment="Quartier ou zone spécifique de l'agence") # NOUVEAU CHAMP
     database_name = Column(String, nullable=False, index=True, comment="Nom de la base de données")
     expected_hour_utc = Column(Integer, nullable=False, comment="Heure attendue de fin de sauvegarde (UTC)")
     expected_minute_utc = Column(Integer, nullable=False, comment="Minute attendue de fin de sauvegarde (UTC)")
     
     __table_args__ = (
-        UniqueConstraint('year', 'company_name', 'city', 'database_name',
+        UniqueConstraint('year', 'company_name', 'city', 'neighborhood', 'database_name', # AJUSTÉ: Ajout de 'neighborhood'
                        'expected_hour_utc', 'expected_minute_utc',
                        name='_unique_job_config'),
     )
@@ -55,7 +56,8 @@ class ExpectedBackupJob(Base):
     # Chemins de stockage pour l'agent et la destination finale
     agent_id_responsible = Column(String, nullable=False, index=True, comment="ID de l'agent responsable de ce job")
     agent_deposit_path_template = Column(String, nullable=False, comment="Template du chemin de dépôt des fichiers de BD par l'agent")
-    agent_log_deposit_path_template = Column(String, nullable=False, comment="Template du chemin de dépôt du fichier STATUS.json par l'agent")
+    # AJUSTÉ: le template du STATUS.json n'est plus horaire mais basé sur entreprise/ville/quartier
+    agent_log_deposit_path_template = Column(String, nullable=False, comment="Template du chemin de dépôt du dossier des logs par l'agent (ex: {agent_id}/log/)") 
     final_storage_path_template = Column(String, nullable=False, comment="Template du chemin final de stockage des sauvegardes validées")
 
     expected_frequency = Column(SQLEnum(*[f.value for f in BackupFrequency]), nullable=False)
@@ -68,13 +70,18 @@ class ExpectedBackupJob(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+    # Relation avec les entrées d'historique de sauvegarde
     backup_entries = relationship("BackupEntry", back_populates="expected_job", order_by="desc(BackupEntry.timestamp)", lazy=True)
+
+    previous_successful_hash_global = Column(String(64), nullable=True, comment="Dernier hash global de succès pour cette BD")
 
     def __repr__(self):
         return (f"<ExpectedBackupJob(company='{self.company_name}', city='{self.city}', "
-                f"db='{self.database_name}', year={self.year}, agent='{self.agent_id_responsible}', "
+                f"neighborhood='{self.neighborhood}', db='{self.database_name}', year={self.year}, " # AJUSTÉ: Ajout de 'neighborhood'
+                f"agent='{self.agent_id_responsible}', "
                 f"expected_time={self.expected_hour_utc:02d}:{self.expected_minute_utc:02d} UTC, "
                 f"status='{self.current_status.value}')>")
+
 
 # --- TABLE 2: BackupEntry ---
 class BackupEntry(Base):

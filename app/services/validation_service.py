@@ -1,18 +1,16 @@
 import json
 import os
 import logging
-from datetime import datetime
+from datetime import datetime, timezone, timedelta # Importe timezone et timedelta pour les checks ISO 8601
 from app.core.exceptions import StatusFileValidationError
 
-# Obtenir une instance de logger pour ce module.
-# Le nom 'app.services.validation_service' correspond à la hiérarchie de votre logger définie dans logging.yaml.
 logger = logging.getLogger(__name__)
-
-
 
 def validate_status_file(file_path: str) -> dict:
     """
-    Lit et valide le contenu d'un fichier STATUS.json
+    Lit et valide le contenu d'un fichier STATUS.json selon la nouvelle structure globale.
+    Il vérifie la présence des champs globaux et la structure de base des entrées de bases de données.
+    La validation détaillée des champs de processus individuels (checksum, size) est effectuée par le scanner.
     
     Args: 
         file_path (str): Le chemin absolu vers le fichier STATUS.json à valider.
@@ -23,60 +21,74 @@ def validate_status_file(file_path: str) -> dict:
     Raises:
         StatusFileValidationError: Si le fichier est manquant, malformé, ou si des champs obligatoires sont absents/invalides.
     """
-    logger.debug(f"Essaie de validation du fichier STATUS.json : {file_path}")
+    logger.debug(f"Tentative de validation du fichier STATUS.json : {file_path}")
 
     if not os.path.exists(file_path):
-        logger.error(f"Le fichier STATUS.json n'a pas été trouvé dans l'arborescence: {file_path}")
-        raise StatusFileValidationError(f"STATUS.json n'a pas été trouvé: {file_path}")
+        logger.error(f"Le fichier STATUS.json n'a pas été trouvé : {file_path}")
+        raise StatusFileValidationError(f"STATUS.json n'a pas été trouvé : {file_path}")
 
-    #Lecture du fichier JSON
+    # Lecture du fichier JSON
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             status_data = json.load(f)
-        logger.debug(f"Successfully loaded JSON from {file_path}")
+        logger.debug(f"Contenu JSON chargé avec succès depuis {file_path}")
     except json.JSONDecodeError as e:
-        logger.error(f"Invalid JSON format in {file_path}: {e}")
-        raise StatusFileValidationError(f"Invalid JSON format: {file_path} - {e}")
+        logger.error(f"Format JSON invalide dans {file_path}: {e}")
+        raise StatusFileValidationError(f"Format JSON invalide : {file_path} - {e}")
     except Exception as e:
-        logger.error(f"Error reading {file_path}: {e}")
-        raise StatusFileValidationError(f"Error reading file: {file_path} - {e}")
+        logger.error(f"Erreur de lecture du fichier {file_path}: {e}")
+        raise StatusFileValidationError(f"Erreur de lecture du fichier : {file_path} - {e}")
 
-    # Validation des champs obligatoires
-    required_fields = ["status", "timestamp", "file_name", "file_size_bytes", "checksum_sha256"]
-    for field in required_fields:
+    # --- Validation des champs obligatoires globaux ---
+    required_global_fields = ["operation_start_time", "operation_timestamp", "agent_id", "overall_status", "databases"]
+    for field in required_global_fields:
         if field not in status_data:
-            logger.error(f"Missing required field '{field}' in STATUS.json: {file_path}")
-            raise StatusFileValidationError(f"Missing required field '{field}' in STATUS.json: {file_path}")
+            logger.error(f"Champ global obligatoire manquant '{field}' dans STATUS.json: {file_path}")
+            raise StatusFileValidationError(f"Champ global obligatoire manquant '{field}' dans STATUS.json: {file_path}")
 
-    # Validation du champ 'status'
-    if status_data["status"] not in ["success", "failed"]:
-        logger.error(f"Invalid 'status' value '{status_data['status']}' in STATUS.json: {file_path}")
-        raise StatusFileValidationError(f"Invalid 'status' value: {status_data['status']} in {file_path}")
+    # Validation du champ 'overall_status'
+    if status_data["overall_status"] not in ["completed", "failed_globally"]:
+        logger.error(f"Valeur invalide pour 'overall_status': '{status_data['overall_status']}' dans {file_path}. Attendue 'completed' ou 'failed_globally'.")
+        raise StatusFileValidationError(f"Valeur 'overall_status' invalide: {status_data['overall_status']} dans {file_path}")
 
-    # Validation du champ 'timestamp' (format ISO 8601 UTC)
-    try:
-        # Essayer de parser le timestamp pour s'assurer qu'il est valide
-        # Le 'Z' à la fin indique UTC. datetime.fromisoformat supporte cela.
-        datetime.fromisoformat(status_data["timestamp"].replace('Z', '+00:00'))
-    except ValueError:
-        logger.error(f"Invalid 'timestamp' format in STATUS.json: {status_data['timestamp']} in {file_path}. Expected ISO 8601 UTC.")
-        raise StatusFileValidationError(f"Invalid 'timestamp' format: {status_data['timestamp']} in {file_path}. Expected ISO 8601 UTC.")
+    # Validation des champs de timestamp globaux (ISO 8601 UTC)
+    for ts_field in ["operation_start_time", "operation_timestamp"]:
+        try:
+            # datetime.fromisoformat supporte le 'Z' pour UTC à partir de Python 3.11,
+            # pour une meilleure compatibilité, on peut remplacer 'Z' par '+00:00'
+            dt_obj = datetime.fromisoformat(status_data[ts_field].replace('Z', '+00:00'))
+            # S'assurer que le timestamp est bien en UTC
+            if dt_obj.tzinfo is None or dt_obj.tzinfo.utcoffset(dt_obj) != timedelta(0):
+                 logger.warning(f"Le timestamp '{ts_field}' ({status_data[ts_field]}) dans {file_path} n'est pas spécifié comme UTC ou a un décalage horaire. Il devrait être en UTC.")
+        except ValueError:
+            logger.error(f"Format invalide pour le champ '{ts_field}' dans STATUS.json: {status_data[ts_field]} dans {file_path}. Attendu ISO 8601 UTC.")
+            raise StatusFileValidationError(f"Format invalide pour '{ts_field}': {status_data[ts_field]} dans {file_path}. Attendu ISO 8601 UTC.")
 
-    # Validation du champ 'file_size_bytes' (doit être un entier positif)
-    if not isinstance(status_data["file_size_bytes"], int) or status_data["file_size_bytes"] < 0:
-        logger.error(f"Invalid 'file_size_bytes' value or type: {status_data['file_size_bytes']} in {file_path}. Expected a positive integer.")
-        raise StatusFileValidationError(f"Invalid 'file_size_bytes': {status_data['file_size_bytes']} in {file_path}")
+    # Validation de la section 'databases'
+    if not isinstance(status_data["databases"], dict):
+        logger.error(f"Le champ 'databases' dans STATUS.json n'est pas un dictionnaire: {file_path}")
+        raise StatusFileValidationError(f"Le champ 'databases' doit être un dictionnaire dans {file_path}")
 
-    # Validation du champ 'checksum_sha256' (doit être une chaîne de 64 caractères hexadécimaux)
-    # Une expression régulière plus robuste pourrait être utilisée pour vérifier le format hexadécimal.
-    if not isinstance(status_data["checksum_sha256"], str) or len(status_data["checksum_sha256"]) != 64:
-        logger.error(f"Invalid 'checksum_sha256' format or length: {status_data['checksum_sha256']} in {file_path}. Expected a 64-char string.")
-        raise StatusFileValidationError(f"Invalid 'checksum_sha256': {status_data['checksum_sha256']} in {file_path}")
+    if not status_data["databases"]:
+        logger.warning(f"La section 'databases' est vide dans STATUS.json: {file_path}. Cela peut indiquer un problème.")
 
-    # Si le statut est 'failed', le champ 'error_message' est fortement recommandé.
-    if status_data["status"] == "failed" and "error_message" not in status_data:
-        logger.warning(f"Missing recommended field 'error_message' for 'failed' status in STATUS.json: {file_path}")
-        # Note: Nous ne levons pas d'exception ici car ce n'est que recommandé, pas obligatoire.
+    # Validation de la structure de chaque entrée de base de données (légère)
+    db_process_keys = ["backup_process", "compress_process", "transfer_process"]
+    for db_name, db_data in status_data["databases"].items():
+        if not isinstance(db_data, dict):
+            logger.error(f"L'entrée pour la base de données '{db_name}' dans STATUS.json n'est pas un dictionnaire: {file_path}")
+            raise StatusFileValidationError(f"Entrée BD '{db_name}' invalide dans {file_path}")
+        
+        for process_key in db_process_keys:
+            if process_key not in db_data or not isinstance(db_data[process_key], dict):
+                logger.error(f"Processus obligatoire manquant ou invalide '{process_key}' pour la BD '{db_name}' dans STATUS.json: {file_path}")
+                raise StatusFileValidationError(f"Processus '{process_key}' manquant/invalide pour BD '{db_name}' dans {file_path}")
+            
+            # Chaque processus devrait avoir au moins un statut booléen
+            if "status" not in db_data[process_key] or not isinstance(db_data[process_key]["status"], bool):
+                logger.error(f"Statut obligatoire manquant ou invalide dans le processus '{process_key}' pour la BD '{db_name}' dans STATUS.json: {file_path}")
+                raise StatusFileValidationError(f"Statut '{process_key}' manquant/invalide pour BD '{db_name}' dans {file_path}")
 
-    logger.info(f"STATUS.json file validated successfully: {file_path}. Status: {status_data['status']}")
+    logger.info(f"Fichier STATUS.json validé avec succès (structure globale) : {file_path}. Statut global: {status_data['overall_status']}")
     return status_data
+

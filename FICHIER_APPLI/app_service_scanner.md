@@ -101,3 +101,82 @@ Ces appels seront implémentés dans les prochaines étapes (avec app/services/b
 Si le statut est SUCCESS, le service de promotion sera appelé pour déplacer le fichier de la zone de dépôt vers la zone validée.
 
 Si le statut est FAILED, MISSING, TRANSFER_INTEGRITY_FAILED, ou HASH_MISMATCH, le service de notification sera appelé pour envoyer une alerte.
+
+Gestion des Multiples Agents et Simultanéité (Explication Détaillée)
+Votre question est très pertinente concernant le comportement du scanner face à plusieurs agents et leurs fichiers de statut. Voici comment cela fonctionne dans notre conception actuelle et les considérations pour la simultanéité :
+
+1. Le Fichier STATUS.json est Global Par Agent et Par Opération
+C'est un point clé de notre nouveau design. Si un agent est configuré pour sauvegarder 20 bases de données en un seul cycle (ex: à 13h UTC), il générera un unique fichier STATUS.json pour toutes ces 20 bases de données. Ce fichier contiendra un dictionnaire databases où chaque clé est le nom d'une base de données, et la valeur est son rapport détaillé pour ce cycle d'opération.
+
+Exemple de nom de fichier STATUS.json : OPERATION_20250612_1300_agent_douala_prod_01.json
+
+Ce fichier serait déposé dans /mnt/agent_deposits/agent_douala_prod_01/log/.
+
+2. Comment le Scanner Traite les Multiples Agents et BDs
+Notre scanner est conçu pour itérer à travers les ExpectedBackupJob configurés dans la base de données, qui sont les "attentes" du serveur.
+
+Lien Job-Agent : Chaque ExpectedBackupJob dans notre base de données est associé à un agent_id_responsible (par exemple, le job pour compta_db de Sirpacam à Douala est géré par agent_douala_prod_01).
+
+Itération Séquentielle : La fonction scan_backups récupère tous les jobs actifs de la base de données et les traite séquentiellement, un par un.
+
+jobs = db.query(ExpectedBackupJob).filter(ExpectedBackupJob.is_active == True).all()
+for job in jobs:
+    # Logique de scan pour ce job spécifique
+    # ... qui va chercher le STATUS.json de son agent_id_responsible
+
+Recherche du STATUS.json pertinent : Lorsque le scanner traite un job (disons, job_compta_db pour agent_douala_prod_01), il construit le chemin d'accès au fichier STATUS.json global spécifique à cet agent et à ce cycle de temps attendu.
+
+Il sait que le STATUS.json pour agent_douala_prod_01 devrait être dans /mnt/agent_deposits/agent_douala_prod_01/log/.
+
+Il s'attend à un nom de fichier comme OPERATION_YYYYMMDD_HHMM_agent_douala_prod_01.json.
+
+Il lira ce fichier STATUS.json global.
+
+Extraction des données de la BD : Une fois le STATUS.json de l'agent lu et validé, le scanner accède au dictionnaire "databases" à l'intérieur de ce STATUS.json pour trouver les informations spécifiques à la database_name du job en cours de traitement.
+
+# Dans le code du scanner :
+overall_status_data = validate_status_file(latest_status_file_path)
+agent_report_data = overall_status_data.get("databases", {}).get(job.database_name) # Ici, on extrait la section pertinente pour le job
+
+Traitement Séquentiel, Rapport Global :
+
+Si l'agent A gère BD1, BD2, et BD3, tous rapportés dans le même STATUS.json_A.
+
+Quand le scanner traite le ExpectedBackupJob pour BD1 (associé à agent_A), il lira STATUS.json_A et traitera la section de BD1.
+
+Plus tard, quand il traitera le ExpectedBackupJob pour BD2 (aussi associé à agent_A), il lira STATUS.json_A à nouveau (ou pourrait le mettre en cache si l'optimisation est nécessaire) et traitera la section de BD2.
+
+Ceci garantit que chaque base de données attendue est bien vérifiée par rapport au rapport global de son agent.
+
+3. Simultanéité et Optimisation pour l'Avenir
+Dans la version actuelle du MVP, la fonction scan_backups est exécutée de manière séquentielle pour tous les jobs. Cela signifie qu'elle ne traite qu'un job de sauvegarde à la fois, et donc un agent à la fois.
+
+Avantages de la Séquentialité pour le MVP :
+
+Simplicité : Moins complexe à développer et à déboguer.
+
+Gestion des ressources : Un seul thread/processus interagit avec le système de fichiers et la base de données, évitant les problèmes de concurrence.
+
+Suffisant pour de nombreux cas : Pour des centaines de jobs qui ne se chevauchent pas trop fréquemment, une exécution séquentielle toutes les 15 minutes est souvent suffisante.
+
+Quand envisager la Simultanéité (Future) :
+
+Si vous avez un très grand nombre d'agents/jobs (milliers) ou si les scans prennent beaucoup de temps (par exemple, des calculs de hachage sur de très gros fichiers), une exécution séquentielle pourrait devenir un goulot d'étranglement.
+
+Options de Concurrence Future :
+
+Multithreading/Multiprocessing : Utiliser les modules concurrent.futures (ThreadPoolExecutor ou ProcessPoolExecutor) de Python pour traiter les jobs en parallèle. Cela nécessiterait une gestion plus complexe des sessions de base de données et des accès concurrents aux fichiers.
+
+File d'Attente de Messages (ex: RabbitMQ, Kafka) : Les agents pourraient envoyer leurs STATUS.json à une file d'attente. Le scanner (ou des "workers" du scanner) lirait ensuite depuis cette file. Cela découplerait la réception des rapports de leur traitement et permettrait une scalabilité horizontale des scanners.
+
+Réflexion du Scheduler : APScheduler peut lancer des tâches dans différents threads ou processus. On pourrait lancer scan_backups dans un ProcessPoolExecutor fourni par APScheduler.
+
+En résumé pour votre question :
+
+Gestion des BDs par Agent : Oui, chaque ExpectedBackupJob est lié à un agent_id_responsible. Le STATUS.json que le scanner recherche est celui de cet agent, et il contient les statuts de toutes les BDs gérées par cet agent dans ce cycle. Le scanner extrait la portion du rapport pertinente pour le job.database_name en cours.
+
+Lancer les scans simultanément : Dans la conception actuelle du MVP, le scan se fait séquentiellement pour tous les jobs de tous les agents par une seule exécution de la fonction scan_backups. Pour le moment, cela est suffisant pour le MVP. Si des goulots d'étranglement apparaissent, une optimisation vers une exécution parallèle (multithreading/multiprocessing) ou une architecture basée sur des files d'attente serait une évolution logique.
+
+Pour l'implémentation du scanner (app/services/scanner.py), nous nous tiendrons à l'approche séquentielle décrite précédemment. Cela nous permettra de nous concentrer sur la logique métier complexe avant d'introduire des considérations de performance et de concurrence, qui sont souvent des optimisations ultérieures.
+
+Cette explication plus détaillée vous aide-t-elle à visualiser le comportement du scanner avec plusieurs agents ?

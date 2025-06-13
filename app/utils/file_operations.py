@@ -83,6 +83,27 @@ def move_file(source_path: str, destination_path: str) -> None:
         raise FileOperationError(f"Échec du déplacement du fichier '{source_path}' vers '{destination_path}': {e}")
 
 
+def create_dummy_file(file_path: str, content: bytes = b"dummy content"):
+    """
+    Crée un fichier factice avec un contenu donné. Utile pour les tests.
+
+    Args:
+        file_path (str): Le chemin complet du fichier à créer.
+        content (bytes): Le contenu binaire à écrire dans le fichier.
+
+    Raises:
+        FileOperationError: Si la création du fichier échoue.
+    """
+    try:
+        # S'assurer que le répertoire parent existe avant de créer le fichier
+        ensure_directory_exists(os.path.dirname(file_path))
+        with open(file_path, "wb") as f:
+            f.write(content)
+        logger.debug(f"Fichier factice créé : {file_path} (taille: {len(content)} octets)")
+    except Exception as e:
+        logger.error(f"Échec de la création du fichier factice '{file_path}': {e}")
+        raise FileOperationError(f"Impossible de créer le fichier factice '{file_path}': {e}")
+
 
 def delete_file(file_path: str) -> None:
     """
