@@ -1,0 +1,64 @@
+# 🔹 ENVIRONNEMENT PYTHON
+venv/
+.venv/
+ENV/
+env/
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# 🔹 FICHIERS DE LOGS
+*.log
+logs/
+*.out
+
+# 🔹 FICHIERS TEMPORAIRES
+*.tmp
+*.swp
+*.bak
+*.~*
+
+# 🔹 FICHIERS DE CONFIG & ENV
+.env
+.env.*
+
+# 🔹 FICHIERS COMPILÉS (ex: Cython)
+*.c
+*.so
+*.pyd
+
+# 🔹 DONNÉES
+*.db
+*.sqlite
+*.sqlite3
+*.xlsx
+*.pdf
+data/
+outputs/
+__results__/
+
+# 🔹 CACHE & OUTILS DE DEV
+.ipynb_checkpoints/
+.mypy_cache/
+pytest_cache/
+.tox/
+coverage.*
+htmlcov/
+
+# 🔹 ÉDITEURS / IDEs
+.idea/
+.vscode/
+*.code-workspace
+
+# 🔹 PACKAGING
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# 🔹 REPERTOIRES SPECIFIQUES À TON PROJET
+scripts/__pycache__/
+app/__pycache__/
+tests/__pycache__/
+

@@ -254,16 +254,16 @@ def run_tests():
         latest_entry_db1 = db.query(BackupEntry).filter_by(expected_job_id=job_site1_db1.id).order_by(BackupEntry.timestamp.desc()).first()
         assert updated_job_db1.current_status == JobStatus.OK
         assert latest_entry_db1.status == BackupEntryStatus.SUCCESS
-        assert not os.path.exists(staged_db_path_db1) # Fichier stagé db1 doit être supprimé
-        print(f"{COLOR_GREEN}SUCCÈS:{COLOR_RESET} Scénario 1.1 (db1_13h) validé. Statut: {getattr(updated_job_db1.current_status, 'value', updated_job_db1.current_status)}, Entrée: {getattr(latest_entry_db1.status, 'value', latest_entry_db1.status)}")
+        assert os.path.exists(staged_db_path_db1) # Fichier stagé db1 doit rester présent
+        print(f"{COLOR_GREEN}SUCCÈS:{COLOR_RESET} Scénario 1.1 (db1_13h) validé. Statut: {getattr(updated_job_db1.current_status, 'value', updated_job_db1.current_status)}, Entrée: {getattr(latest_entry_db1.status, 'value', latest_entry_db1.status)}. Fichier stagé PRÉSENT.")
 
         # Vérifier les résultats pour db2
         updated_job_db2 = db.query(ExpectedBackupJob).filter_by(id=job_site1_db2.id).first()
         latest_entry_db2 = db.query(BackupEntry).filter_by(expected_job_id=job_site1_db2.id).order_by(BackupEntry.timestamp.desc()).first()
         assert updated_job_db2.current_status == JobStatus.OK
         assert latest_entry_db2.status == BackupEntryStatus.SUCCESS
-        assert not os.path.exists(staged_db_path_db2) # Fichier stagé db2 doit être supprimé
-        print(f"{COLOR_GREEN}SUCCÈS:{COLOR_RESET} Scénario 1.2 (db2_13h) validé. Statut: {getattr(updated_job_db2.current_status, 'value', updated_job_db2.current_status)}, Entrée: {getattr(latest_entry_db2.status, 'value', latest_entry_db2.status)}")
+        assert os.path.exists(staged_db_path_db2) # Fichier stagé db2 doit rester présent
+        print(f"{COLOR_GREEN}SUCCÈS:{COLOR_RESET} Scénario 1.2 (db2_13h) validé. Statut: {getattr(updated_job_db2.current_status, 'value', updated_job_db2.current_status)}, Entrée: {getattr(latest_entry_db2.status, 'value', latest_entry_db2.status)}. Fichier stagé PRÉSENT.")
 
         # Vérifier que le STATUS.json a été archivé
         agent_log_dir_site1 = os.path.join(app_settings.BACKUP_STORAGE_ROOT, job_site1_db1.agent_id_responsible, "log")
@@ -353,8 +353,8 @@ def run_tests():
         latest_entry_success_site3 = db.query(BackupEntry).filter_by(expected_job_id=job_site3_db_success.id).order_by(BackupEntry.timestamp.desc()).first()
         assert updated_job_success_site3.current_status == JobStatus.OK
         assert latest_entry_success_site3.status == BackupEntryStatus.SUCCESS
-        assert not os.path.exists(staged_db_path_success_site3) # Le fichier stagé doit être supprimé
-        print(f"{COLOR_GREEN}SUCCÈS:{COLOR_RESET} Scénario 3.2 (BD réussie) validé. Statut: {getattr(updated_job_success_site3.current_status, 'value', updated_job_success_site3.current_status)}, Entrée: {getattr(latest_entry_success_site3.status, 'value', latest_entry_success_site3.status)}")
+        assert os.path.exists(staged_db_path_success_site3) # Le fichier stagé doit rester présent
+        print(f"{COLOR_GREEN}SUCCÈS:{COLOR_RESET} Scénario 3.2 (BD réussie) validé. Statut: {getattr(updated_job_success_site3.current_status, 'value', updated_job_success_site3.current_status)}, Entrée: {getattr(latest_entry_success_site3.status, 'value', latest_entry_success_site3.status)}. Fichier stagé PRÉSENT.")
 
         # Vérifier que le STATUS.json a été archivé
         agent_log_dir_site3 = os.path.join(app_settings.BACKUP_STORAGE_ROOT, job_site3_db_failed.agent_id_responsible, "log")

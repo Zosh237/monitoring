@@ -583,7 +583,7 @@ class BackupScanner:
             try:
                 promoted_path = promote_backup(staged_db_file_path, job)
                 logger.info(f"Fichier de sauvegarde promu avec succès à : {promoted_path}")
-                # Potentiellement mettre à jour job.last_promoted_path si nécessaire
+                # Le fichier stagé n'est plus supprimé ici, il reste en place pour les synchronisations futures
             except BackupManagerError as e:
                 logger.error(f"Échec de la promotion du fichier pour {job.database_name}: {e}")
                 # On pourrait vouloir changer le job.current_status en un nouveau statut 'PROMOTION_FAILED'
