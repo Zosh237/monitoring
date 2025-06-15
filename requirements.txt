@@ -24,3 +24,7 @@ APScheduler==3.10.4
 # Ajout de Pydantic pour la configuration des settings (car prévu dans ta structure)
 pydantic==2.8.2
 pydantic-settings==2.3.4 # Pour BaseSettings et la gestion des .env
+
+pytest==8.4.0
+pytest-cov==6.2.1
+python-dateutil==2.9.0.post0

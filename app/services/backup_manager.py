@@ -1,36 +1,54 @@
+# app/services/backup_manager.py
+
 import os
-import shutil
+import logging
 from datetime import datetime
+
+from app.models.models import ExpectedBackupJob
+import app.utils.file_operations as file_ops
+from app.utils.path_utils import get_expected_final_path
 from config.settings import settings
 
+logger = logging.getLogger(__name__)
+
 class BackupManagerError(Exception):
+    """Exception personnalisée pour les erreurs du gestionnaire de sauvegardes."""
     pass
 
-def promote_backup(staged_db_file_path, job):
+def promote_backup(staged_file_path: str, job: ExpectedBackupJob, base_validated_path: str = None) -> str:
     """
-    Copie le fichier de sauvegarde validé vers la zone de stockage final avec un nom horodaté.
-    Le fichier original dans la zone de staging reste en place.
+    Copie un fichier de sauvegarde validé de la zone de staging
+    vers son emplacement de stockage final et permanent.
+    Si un fichier du même nom existe déjà à destination, il sera remplacé.
+    Le fichier dans la zone de staging n'est PAS supprimé.
     """
     try:
-        # Construire le chemin de destination avec la structure YEAR/COMPANY/CITY/NEIGHBORHOOD/DB_NAME
-        destination_dir = os.path.join(
-            settings.VALIDATED_BACKUPS_BASE_PATH,
-            str(job.year),
-            job.company_name,
-            job.city,
-            job.neighborhood,
-            job.database_name
-        )
-        os.makedirs(destination_dir, exist_ok=True)
+        logger.debug(f"promote_backup: Début de la promotion pour le job '{job.database_name}'")
+        logger.debug(f"promote_backup: Fichier stagé d'origine : '{staged_file_path}'")
+        logger.debug(f"promote_backup: Valeurs du job - Année='{job.year}', Société='{job.company_name}', Ville='{job.city}', DB='{job.database_name}'")
+        logger.debug(f"promote_backup: Template de stockage final : '{job.final_storage_path_template}'")
 
-        # Générer le nom du fichier avec horodatage
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        destination_filename = f"{job.database_name}_{timestamp}.sql.gz"
-        destination_path = os.path.join(destination_dir, destination_filename)
+        destination_file_path = get_expected_final_path(job, base_validated_path)
+        destination_dir = os.path.dirname(destination_file_path)
 
-        # Copier le fichier
-        shutil.copy2(staged_db_file_path, destination_path)
-        
-        return destination_path
+        logger.debug(f"promote_backup: Répertoire de destination calculé : '{destination_dir}'")
+        logger.debug(f"promote_backup: Chemin final du fichier de destination calculé : '{destination_file_path}'")
+
+        file_ops.ensure_directory_exists(destination_dir)
+        logger.debug(f"promote_backup: Répertoire de destination assuré : '{destination_dir}'")
+
+        file_ops.copy_file(staged_file_path, destination_file_path)
+        logger.info(f"Sauvegarde pour '{job.database_name}' copiée avec succès de '{staged_file_path}' vers '{destination_file_path}'.")
+
+        return destination_file_path
+
+    except file_ops.FileOperationError as e:
+        logger.error(f"Échec de la promotion (copie) de la sauvegarde pour '{job.database_name}'. Erreur de fichier : {e}")
+        raise BackupManagerError(f"Échec de la promotion (copie) de la sauvegarde : {e}")
     except Exception as e:
-        raise BackupManagerError(f"Erreur lors de la promotion du fichier : {str(e)}")
+        logger.critical(f"Erreur inattendue lors de la promotion (copie) de la sauvegarde pour '{job.database_name}' : {e}", exc_info=True)
+        raise BackupManagerError(f"Erreur interne lors de la promotion (copie) : {e}")
+
+def cleanup_old_backups(job: ExpectedBackupJob, retention_count: int):
+    logger.debug(f"Nettoyage des anciennes sauvegardes pour le job {job.database_name} - Fonctionnalité non implémentée (rétention par écrasement).")
+    pass

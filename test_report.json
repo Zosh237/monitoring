@@ -1,0 +1,220 @@
+{
+  "test_execution": {
+    "timestamp": "2025-06-15T16:04:44.678054",
+    "total_scenarios": 7,
+    "environment_path": "ACME_PARIS_CENTRE"
+  },
+  "scenarios": [
+    {
+      "name": "Successful Backup",
+      "description": "Sauvegarde complètement réussie avec tous les fichiers présents",
+      "files": {
+        "status_file": "/tmp/mon_test_scanner\\backups\\ACME_PARIS_CENTRE\\log\\20250615_153000_ACME_PARIS_CENTRE.json",
+        "staged_file": "/tmp/mon_test_scanner\\backups\\ACME_PARIS_CENTRE\\database\\backup_20250615_153000.sql.gz",
+        "final_file": "/tmp/mon_test_scanner\\validated\\2025\\ACME\\PARIS\\production_db\\backup_20250615_153000.sql.gz"
+      },
+      "analysis": {
+        "scenario": "Successful Backup",
+        "files_found": {
+          "status": true,
+          "staged_count": 1,
+          "final": true
+        },
+        "expected_result": "SUCCESS",
+        "status_content": {
+          "overall_status": "SUCCESS",
+          "databases_count": 1,
+          "agent_id": "ACME_PARIS_CENTRE"
+        },
+        "predicted_result": "SUCCESS"
+      },
+      "metadata": {
+        "agent": "ACME_PARIS_CENTRE",
+        "database": "production_db",
+        "checksum": "a241c5bb88e64c233e7876944d71e8347ac7d245354d2be2be47fcdafd95e960",
+        "size": 17546
+      }
+    },
+    {
+      "name": "Backup Failure",
+      "description": "Échec de la sauvegarde, pas de fichier généré",
+      "files": {
+        "status_file": "/tmp/mon_test_scanner\\backups\\GLOBEX_LYON_EST\\log\\20250615_153000_GLOBEX_LYON_EST.json",
+        "staged_file": null,
+        "final_file": null
+      },
+      "analysis": {
+        "scenario": "Backup Failure",
+        "files_found": {
+          "status": true,
+          "staged_count": 0,
+          "final": false
+        },
+        "expected_result": "BACKUP_FAILED",
+        "status_content": {
+          "overall_status": "FAILED",
+          "databases_count": 3,
+          "agent_id": "GLOBEX_LYON_EST"
+        },
+        "predicted_result": "BACKUP_FAILED"
+      },
+      "metadata": {
+        "agent": "GLOBEX_LYON_EST",
+        "database": "analytics_db",
+        "checksum": null,
+        "size": null
+      }
+    },
+    {
+      "name": "Missing Files",
+      "description": "Aucun fichier de statut ni de sauvegarde présent",
+      "files": {
+        "status_file": null,
+        "staged_file": null,
+        "final_file": null
+      },
+      "analysis": {
+        "scenario": "Missing Files",
+        "files_found": {
+          "status": false,
+          "staged_count": 0,
+          "final": false
+        },
+        "expected_result": "MISSING",
+        "predicted_result": "MISSING"
+      },
+      "metadata": {
+        "agent": "INITECH_MARSEILLE_SUD",
+        "database": "backup_db",
+        "checksum": null,
+        "size": null
+      }
+    },
+    {
+      "name": "Hash Mismatch",
+      "description": "Sauvegarde avec erreur de checksum",
+      "files": {
+        "status_file": "/tmp/mon_test_scanner\\backups\\UMBRELLA_TOULOUSE_NORD\\log\\20250615_153000_UMBRELLA_TOULOUSE_NORD.json",
+        "staged_file": "/tmp/mon_test_scanner\\backups\\UMBRELLA_TOULOUSE_NORD\\database\\backup_20250615_153000.sql.gz",
+        "final_file": "/tmp/mon_test_scanner\\validated\\2025\\UMBRELLA\\TOULOUSE\\reporting_db\\backup_20250615_153000.sql.gz"
+      },
+      "analysis": {
+        "scenario": "Hash Mismatch",
+        "files_found": {
+          "status": true,
+          "staged_count": 1,
+          "final": true
+        },
+        "expected_result": "HASH_MISMATCH",
+        "status_content": {
+          "overall_status": "FAILED",
+          "databases_count": 1,
+          "agent_id": "UMBRELLA_TOULOUSE_NORD"
+        },
+        "predicted_result": "SUCCESS"
+      },
+      "metadata": {
+        "agent": "UMBRELLA_TOULOUSE_NORD",
+        "database": "reporting_db",
+        "checksum": null,
+        "size": 12929
+      }
+    },
+    {
+      "name": "Transfer Failure",
+      "description": "Sauvegarde réussie mais échec du transfert",
+      "files": {
+        "status_file": "/tmp/mon_test_scanner\\backups\\WAYNETECH_NICE_CENTRE\\log\\20250615_153000_WAYNETECH_NICE_CENTRE.json",
+        "staged_file": "/tmp/mon_test_scanner\\backups\\WAYNETECH_NICE_CENTRE\\database\\backup_20250615_153000.sql.gz",
+        "final_file": null
+      },
+      "analysis": {
+        "scenario": "Transfer Failure",
+        "files_found": {
+          "status": true,
+          "staged_count": 1,
+          "final": false
+        },
+        "expected_result": "TRANSFER_FAILED",
+        "status_content": {
+          "overall_status": "FAILED",
+          "databases_count": 1,
+          "agent_id": "WAYNETECH_NICE_CENTRE"
+        },
+        "predicted_result": "TRANSFER_PENDING"
+      },
+      "metadata": {
+        "agent": "WAYNETECH_NICE_CENTRE",
+        "database": "production_db",
+        "checksum": "0b5757d721c37ffc799d6108e67e34ca086ed22e7d7839ec46ccc05fae0e1405",
+        "size": 22168
+      }
+    },
+    {
+      "name": "Old Status Files",
+      "description": "Fichiers de statut anciens à archiver",
+      "files": {
+        "status_file": "/tmp/mon_test_scanner\\backups\\ACME_PARIS_CENTRE\\log\\20250605_150442_ACME_PARIS_CENTRE.json",
+        "staged_file": "/tmp/mon_test_scanner\\backups\\ACME_PARIS_CENTRE\\database\\backup_20250605_150442.sql.gz",
+        "final_file": null
+      },
+      "analysis": {
+        "scenario": "Old Status Files",
+        "files_found": {
+          "status": true,
+          "staged_count": 1,
+          "final": false
+        },
+        "expected_result": "TO_ARCHIVE",
+        "status_content": {
+          "overall_status": "SUCCESS",
+          "databases_count": 1,
+          "agent_id": "ACME_PARIS_CENTRE"
+        },
+        "predicted_result": "TRANSFER_PENDING"
+      },
+      "metadata": {
+        "agent": "ACME_PARIS_CENTRE",
+        "database": "old_backup_db",
+        "checksum": "60c5e741e2f6e19a368d7a23274db2b7fa4fdde5e29cc6b5784ec491e2f0cb5f",
+        "size": 7638
+      }
+    },
+    {
+      "name": "Partial Success",
+      "description": "Succès partiel avec plusieurs bases de données",
+      "files": {
+        "status_file": "/tmp/mon_test_scanner\\backups\\GLOBEX_LYON_EST\\log\\20250615_153000_GLOBEX_LYON_EST.json",
+        "staged_file": null,
+        "final_file": null
+      },
+      "analysis": {
+        "scenario": "Partial Success",
+        "files_found": {
+          "status": true,
+          "staged_count": 2,
+          "final": false
+        },
+        "expected_result": "PARTIAL_SUCCESS",
+        "status_content": {
+          "overall_status": "FAILED",
+          "databases_count": 3,
+          "agent_id": "GLOBEX_LYON_EST"
+        },
+        "predicted_result": "TRANSFER_PENDING"
+      },
+      "metadata": {
+        "agent": "GLOBEX_LYON_EST",
+        "database": null,
+        "checksum": null,
+        "size": null
+      }
+    }
+  ],
+  "summary": {
+    "files_created": 12,
+    "status_files": 6,
+    "staged_files": 4,
+    "final_files": 2
+  }
+}

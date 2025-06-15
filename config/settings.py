@@ -70,3 +70,10 @@ class Settings(BaseSettings):
     )
 
 settings = Settings()
+
+
+# Ancien
+#field_name = Field(env="ENV_VAR_NAME")
+
+# Nouveau  
+#field_name = Field(json_schema_extra={"env": "ENV_VAR_NAME"})

@@ -104,6 +104,40 @@ def create_dummy_file(file_path: str, content: bytes = b"dummy content"):
         logger.error(f"Échec de la création du fichier factice '{file_path}': {e}")
         raise FileOperationError(f"Impossible de créer le fichier factice '{file_path}': {e}")
 
+def copy_file(source_path: str, destination_path: str):
+    """
+    Copie un fichier de l'emplacement source vers l'emplacement de destination.
+    Écrase le fichier de destination s'il existe déjà.
+
+    Args:
+        source_path (str): Le chemin absolu du fichier source.
+        destination_path (str): Le chemin absolu où le fichier doit être copié.
+
+    Raises:
+        FileOperationError: Si la copie échoue.
+    """
+    logger.debug(f"Tentative de copie du fichier de '{source_path}' vers '{destination_path}'")
+    if not os.path.exists(source_path):
+        logger.error(f"Fichier source non trouvé pour la copie : {source_path}")
+        raise FileOperationError(f"Fichier source non trouvé : {source_path}")
+    
+    # Assurer que le répertoire de destination existe avant de copier
+    destination_dir = os.path.dirname(destination_path)
+    ensure_directory_exists(destination_dir)
+
+    try:
+        shutil.copy2(source_path, destination_path) # copy2 préserve les métadonnées du fichier
+        logger.info(f"Fichier copié avec succès : '{source_path}' -> '{destination_path}'")
+    except shutil.Error as e:
+        logger.error(f"Erreur de copie de fichier de '{source_path}' vers '{destination_path}': {e}")
+        raise FileOperationError(f"Échec de la copie du fichier : {e}")
+    except OSError as e:
+        logger.error(f"Erreur système lors de la copie de fichier de '{source_path}' vers '{destination_path}': {e}")
+        raise FileOperationError(f"Erreur système lors de la copie du fichier : {e}")
+    except Exception as e:
+        logger.critical(f"Erreur inattendue lors de la copie de '{source_path}' vers '{destination_path}': {e}", exc_info=True)
+        raise FileOperationError(f"Erreur interne lors de la copie du fichier : {e}")
+
 
 def delete_file(file_path: str) -> None:
     """

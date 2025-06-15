@@ -17,8 +17,6 @@ from app.services.validation_service import validate_status_file, StatusFileVali
 from app.utils.crypto import calculate_file_sha256, CryptoUtilityError
 from app.utils.file_operations import ensure_directory_exists, move_file, FileOperationError, copy_file
 from app.utils.datetime_utils import parse_iso_datetime, get_utc_now, DateTimeUtilityError
-from app.utils.path_utils import get_expected_final_path
-from app.services.backup_manager import promote_backup, BackupManagerError
 
 # Importe la configuration de l'application
 from config.settings import settings
@@ -28,6 +26,24 @@ logger = logging.getLogger(__name__)
 class ScannerError(Exception):
     """Exception personnalisée pour les erreurs du scanner."""
     pass
+
+def get_expected_final_path(job: ExpectedBackupJob, base_validated_path: str = None) -> str:
+    """
+    Construit le chemin de stockage final attendu pour un fichier de sauvegarde.
+    Utilise le template défini dans ExpectedBackupJob et les attributs du job.
+    """
+    actual_base_path = base_validated_path if base_validated_path is not None else settings.VALIDATED_BACKUPS_BASE_PATH
+    
+    if not actual_base_path:
+        raise ValueError("VALIDATED_BACKUPS_BASE_PATH n'est pas configuré dans les paramètres.")
+
+    relative_path = job.final_storage_path_template.format(
+        year=job.year,
+        company_name=job.company_name,
+        city=job.city,
+        db_name=job.database_name
+    )
+    return os.path.join(actual_base_path, relative_path)
 
 class BackupScanner:
     """
@@ -247,16 +263,6 @@ class BackupScanner:
              entry_message, hash_comparison_result) = self._determine_status_and_integrity(
                 job, staged_db_file_path, db_data, get_utc_now()
             )
-            
-            # Si la sauvegarde est valide, on la promeut
-            if entry_status == BackupEntryStatus.SUCCESS:
-                try:
-                    final_path = promote_backup(staged_db_file_path, job)
-                    self.logger.info(f"Sauvegarde promue avec succès vers : {final_path}")
-                except BackupManagerError as e:
-                    self.logger.error(f"Échec de la promotion de la sauvegarde : {e}")
-                    entry_status = BackupEntryStatus.FAILED
-                    entry_message = f"Échec de la promotion : {e}"
             
         except ScannerError as e:
             entry_status = BackupEntryStatus.FAILED
