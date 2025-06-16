@@ -5,19 +5,26 @@ from datetime import datetime, timezone
 from app.models.models import ExpectedBackupJob, JobStatus
 from app.schemas.expected_backup_job import ExpectedBackupJobCreate, ExpectedBackupJobUpdate
 
+# Fonction helper à ajouter en haut du fichier
+def get_dict_from_model(model):
+    if hasattr(model, 'model_dump'):
+        return model.model_dump()
+    else:
+        return model.dict()
+
+def get_dict_exclude_unset(model):
+    if hasattr(model, 'model_dump'):
+        return model.model_dump(exclude_unset=True)
+    else:
+        return model.dict(exclude_unset=True)
+
+
 def create_expected_backup_job(db: Session, job: ExpectedBackupJobCreate) -> ExpectedBackupJob:
     """
     Crée un nouveau job de sauvegarde attendu dans la base de données.
     """
-    # Gestion flexible : dict ou objet Pydantic
-    if isinstance(job, dict):
-        job_data = job
-    else:
-        # Objet Pydantic - utilise dict() pour v1 ou model_dump() pour v2
-        job_data = job.dict() if hasattr(job, 'dict') else job.model_dump()
-    
     db_job = ExpectedBackupJob(
-        **job_data,
+        **job.dict(),#job.model_dump(),
         current_status=JobStatus.UNKNOWN,
         created_at=datetime.now(timezone.utc)
     )
@@ -44,13 +51,7 @@ def update_expected_backup_job(db: Session, job_id: int, job_update: ExpectedBac
     """
     db_job = db.query(ExpectedBackupJob).filter(ExpectedBackupJob.id == job_id).first()
     if db_job:
-        # Gestion flexible : dict ou objet Pydantic
-        if isinstance(job_update, dict):
-            update_data = job_update
-        else:
-            # Objet Pydantic - utilise dict() pour v1 ou model_dump() pour v2
-            update_data = job_update.dict(exclude_unset=True) if hasattr(job_update, 'dict') else job_update.model_dump(exclude_unset=True)
-        
+        update_data = job_update.dict(exclude_unset=True)
         for key, value in update_data.items():
             setattr(db_job, key, value)
         db.commit()
@@ -65,4 +66,4 @@ def delete_expected_backup_job(db: Session, job_id: int) -> Optional[ExpectedBac
     if db_job:
         db.delete(db_job)
         db.commit()
-    return db_job
+    return db_job 

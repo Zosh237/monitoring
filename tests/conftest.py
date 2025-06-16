@@ -1,91 +1,80 @@
+# tests/conftest.py
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-import os
-import sys
-from datetime import datetime, timezone
+from app.core.database import Base, engine, SessionLocal
+from app.models.models import ExpectedBackupJob, BackupEntry
+from app.main import app  # L'application FastAPI
 
-# Patch du logging pour éviter l'erreur de config lors des tests
-import logging.config
-def fake_file_config(*args, **kwargs):
-    pass
-logging.config.fileConfig = fake_file_config
-
-from app.main import app
-from app.core.database import Base, get_db
-
-# Configuration du logging pour les tests
-import logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-# Fixture pour la base de données SQLite en mémoire
-@pytest.fixture(scope="module")
-def test_db():
+# --- Création du schéma avant la session de test ---
+@pytest.fixture(scope="session", autouse=True)
+def setup_database():
     """
-    Crée une base de données SQLite en mémoire pour les tests.
-    Chaque test module obtient sa propre base de données.
+    Crée toutes les tables nécessaires pour les tests au début d'une session
+    et les détruit à la fin.
     """
-    engine = create_engine("sqlite:///:memory:")
+    # Assurez-vous que tous les modèles sont importés pour être inclus dans Base.metadata
     Base.metadata.create_all(bind=engine)
-    TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-    def override_get_db():
-        try:
-            db = TestingSessionLocal()
-            yield db
-        finally:
-            db.close()
-
-    app.dependency_overrides[get_db] = override_get_db
+    print("Tables créées :", list(Base.metadata.tables.keys()))
     yield
     Base.metadata.drop_all(bind=engine)
 
+# --- Nettoyage des tables avant chaque test ---
+@pytest.fixture(autouse=True)
+def clean_tables():
+    """
+    Vide les tables ExpectedBackupJob et BackupEntry avant chaque test
+    afin de garantir un environnement propre.
+    """
+    db = SessionLocal()
+    db.query(BackupEntry).delete()
+    db.query(ExpectedBackupJob).delete()
+    db.commit()
+    db.close()
+    yield
+
+# --- Fourniture d'un client FastAPI ---
 @pytest.fixture(scope="module")
-def client(test_db):
-    """
-    Crée un client de test FastAPI pour interagir avec l'API.
-    """
+def client():
     with TestClient(app) as c:
         yield c
 
-# Fixture pour les données de test communes
+# --- Fixture pour des données de test complètes pour ExpectedBackupJob ---
 @pytest.fixture
 def sample_job_data():
-    """
-    Fournit des données de test pour un job de sauvegarde.
-    """
     return {
         "database_name": "test_db",
         "agent_id_responsible": "AGENT_TEST_001",
         "company_name": "TestCompany",
         "city": "TestCity",
+        "year": 2025,
+        "neighborhood": "Akwa",
         "expected_hour_utc": 12,
         "expected_minute_utc": 0,
-        "backup_frequency": "daily",
-        "final_storage_path_template": "/backups/{year}/{company}/{city}/{db}_backup.zip"
+        "expected_frequency": "daily",  # Champ obligatoire désormais
+        "final_storage_path_template": "/backups/{year}/{company}/{city}/{db}_backup.zip",
+        "agent_deposit_path_template": "/depot/{company}/{city}/{db}/",
+        "agent_log_deposit_path_template": "/logs/{agent_id}/",
+        "days_of_week": "Mon,Tue,Wed,Thu,Fri"
     }
 
+# --- Fixture pour rendre les données uniques par test ---
+@pytest.fixture
+def unique_sample_job_data(sample_job_data, request):
+    """
+    Renvoie une copie de sample_job_data avec des valeurs uniques pour
+    éviter les conflits d'unicité (par exemple, dans company_name et database_name).
+    """
+    data = sample_job_data.copy()
+    suffix = "_" + request.node.name
+    data["company_name"] += suffix
+    data["database_name"] += suffix
+    return data
+
+# --- Optionnel : Fixture pour des données de test pour BackupEntry ---
 @pytest.fixture
 def sample_backup_entry_data():
-    """
-    Fournit des données de test pour une entrée de sauvegarde.
-    """
     return {
-        "status": "success",
-        "agent_report_timestamp_utc": datetime.now(timezone.utc).isoformat(),
-        "agent_reported_hash_sha256": "test_hash_123",
-        "agent_reported_size_bytes": 1024,
-        "agent_compress_size_pre_compress": 2048,
-        "agent_compress_size_post_compress": 1024,
-        "agent_transfer_process_status": True,
-        "agent_transfer_process_start_time": datetime.now(timezone.utc).isoformat(),
-        "agent_transfer_process_timestamp": datetime.now(timezone.utc).isoformat(),
-        "agent_staged_file_name": "test_backup.zip",
-        "agent_logs_summary": "Test backup completed successfully",
-        "server_calculated_staged_hash": "test_hash_123",
-        "server_calculated_staged_size": 1024,
-        "hash_comparison_result": True,
-        "previous_successful_hash_global": "previous_hash_123"
+        "agent_backup_hash_pre_compress": "test_hash_sha256",
+        "agent_backup_size_pre_compress": 1024,
+        # D'autres champs optionnels peuvent être ajoutés ici si besoin.
     }

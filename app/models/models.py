@@ -32,6 +32,7 @@ class BackupEntryStatus(str, enum.Enum):
     MISSING = "missing"
     HASH_MISMATCH = "hash_mismatch"
     TRANSFER_INTEGRITY_FAILED = "transfer_integrity_failed"
+    UNKNOWN = "unknown"
 
 
 # --- TABLE 1: ExpectedBackupJob ---

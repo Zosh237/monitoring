@@ -8,9 +8,11 @@ class BackupEntryInDB(BaseModel):
     id: int
     expected_job_id: int
     status: BackupEntryStatus
-    agent_report_timestamp_utc: Optional[datetime] = None
-    agent_reported_hash_sha256: Optional[str] = None
-    agent_reported_size_bytes: Optional[int] = None
+    
+    timestamp: datetime
+    agent_backup_hash_pre_compress: Optional[str] = None
+    agent_backup_size_pre_compress: Optional[int] = None
+
     agent_compress_size_pre_compress: Optional[int] = None
     agent_compress_size_post_compress: Optional[int] = None
     agent_transfer_process_status: Optional[bool] = None
