@@ -4,6 +4,7 @@
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional, List
+import os
 
 class Settings(BaseSettings):
     """
@@ -31,10 +32,7 @@ class Settings(BaseSettings):
     )
 
     # Intervalle de planification du scanner de sauvegardes en minutes
-    SCANNER_INTERVAL_MINUTES: int = Field(
-        15,
-        env="SCANNER_INTERVAL_MINUTES"
-    )
+    SCANNER_INTERVAL_MINUTES: int = int(os.getenv("SCANNER_INTERVAL_MINUTES", 15))
     
     # Nouvelle variable : Fenêtre de temps en minutes pendant laquelle un rapport STATUS.json
     # est considéré comme pertinent après l'heure attendue du job.
@@ -62,6 +60,14 @@ class Settings(BaseSettings):
         "UTC",
         env="APP_TIMEZONE"
     )
+
+    # Paramètres pour les notifications par e-mail
+    EMAIL_HOST: Optional[str] = os.getenv("EMAIL_HOST")
+    EMAIL_PORT: int = int(os.getenv("EMAIL_PORT", "587"))  # Port par défaut pour TLS
+    EMAIL_USERNAME: Optional[str] = os.getenv("EMAIL_USERNAME")
+    EMAIL_PASSWORD: Optional[str] = os.getenv("EMAIL_PASSWORD")
+    EMAIL_SENDER: Optional[str] = os.getenv("EMAIL_SENDER")
+    ADMIN_EMAIL_RECIPIENT: Optional[str] = os.getenv("ADMIN_EMAIL_RECIPIENT")
 
     model_config = SettingsConfigDict(
         env_file=".env",
