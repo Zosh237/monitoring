@@ -3,6 +3,13 @@ from typing import List, Optional
 
 from app.models.models import BackupEntry
 
+def create_backup_entry(db: Session, backup_entry):
+    db_entry = BackupEntry(**backup_entry.dict())
+    db.add(db_entry)
+    db.commit()
+    db.refresh(db_entry)
+    return db_entry
+
 def get_backup_entry(db: Session, entry_id: int) -> Optional[BackupEntry]:
     """
     Récupère une entrée de sauvegarde par son ID.

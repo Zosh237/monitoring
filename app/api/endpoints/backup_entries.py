@@ -12,6 +12,13 @@ router = APIRouter(
     responses={404: {"description": "Non trouvé"}},
 )
 
+from sqlalchemy.orm import Session
+from app.models.models import BackupEntry
+
+
+
+# Ajoutez ici vos autres fonctions CRUD (get_backup_entry, get_backup_entries, etc.)
+
 # La route plus spécifique "by_job" doit être déclarée EN PREMIER
 @router.get("/by_job/{job_id}", response_model=List[BackupEntryInDB])
 def read_entries_by_job(

@@ -73,3 +73,4 @@ def delete_job(
     if db_job is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job non trouvé")
     return None
+
