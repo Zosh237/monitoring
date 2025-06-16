@@ -71,8 +71,14 @@ class ExpectedBackupJob(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    # Relation avec les entrées d'historique de sauvegarde
-    backup_entries = relationship("BackupEntry", back_populates="expected_job", order_by="desc(BackupEntry.timestamp)", lazy=True)
+    # Relation avec les entrées d'historique de sauvegarde   ....................MODIF
+    backup_entries = relationship("BackupEntry"
+                                  , back_populates="expected_job"
+                                  , order_by="desc(BackupEntry.timestamp)"
+                                  , lazy=True
+                                  ,cascade="all, delete-orphan"
+                                  , passive_deletes=True, 
+    )
 
     previous_successful_hash_global = Column(String(64), nullable=True, comment="Dernier hash global de succès pour cette BD")
 
@@ -92,9 +98,13 @@ class BackupEntry(Base):
     """
     __tablename__ = "backup_entries"
 
-    id = Column(Integer, primary_key=True, index=True)
-    expected_job_id = Column(Integer, ForeignKey("expected_backup_jobs.id"), nullable=False, index=True)
+    id = Column(Integer
+                , primary_key=True
+                , index=True
+    )
+    #expected_job_id = Column(Integer, ForeignKey("expected_backup_jobs.id"), nullable=False, index=True)
     expected_job = relationship("ExpectedBackupJob", back_populates="backup_entries") # Correction ici du back_populates
+    expected_job_id = Column(Integer, ForeignKey("expected_backup_jobs.id", ondelete="CASCADE"), nullable=False)
 
     timestamp = Column(DateTime, default=datetime.utcnow, nullable=False, comment="Horodatage de la détection par le serveur")
     status = Column(SQLEnum(*[s.value for s in BackupEntryStatus]), nullable=False, index=True)

@@ -19,11 +19,13 @@ class ExpectedBackupJobBase(BaseModel):
     agent_log_deposit_path_template: str
     final_storage_path_template: str
 
+    model_config = ConfigDict(from_attributes=True, use_enum_values=True)
+
 class ExpectedBackupJobCreate(ExpectedBackupJobBase):
     """Schéma pour la création d'un ExpectedBackupJob."""
     pass
 
-class ExpectedBackupJobUpdate(ExpectedBackupJobBase):
+class ExpectedBackupJobUpdate(BaseModel):
     """Schéma pour la mise à jour d'un ExpectedBackupJob (tous les champs sont optionnels)."""
     year: Optional[int] = None
     database_name: Optional[str] = None
@@ -39,6 +41,8 @@ class ExpectedBackupJobUpdate(ExpectedBackupJobBase):
     agent_log_deposit_path_template: Optional[str] = None
     final_storage_path_template: Optional[str] = None
 
+    model_config = ConfigDict(from_attributes=True, use_enum_values=True)
+
 class ExpectedBackupJobInDB(ExpectedBackupJobBase):
     """Schéma pour la représentation d'un ExpectedBackupJob tel qu'il est stocké en DB."""
     id: int
@@ -47,5 +51,3 @@ class ExpectedBackupJobInDB(ExpectedBackupJobBase):
     last_successful_backup_utc: Optional[datetime] = None
     last_failed_backup_utc: Optional[datetime] = None
     created_at: datetime
-
-    model_config = ConfigDict(from_attributes=True, use_enum_values=True) 

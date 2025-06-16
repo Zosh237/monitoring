@@ -5,6 +5,17 @@ from app.core.database import Base, engine, SessionLocal
 from app.models.models import ExpectedBackupJob, BackupEntry
 from app.main import app  # L'application FastAPI
 
+@pytest.fixture
+def test_db():
+    db = SessionLocal()
+    if db.bind.dialect.name == "sqlite":
+        db.execute("PRAGMA foreign_keys=ON")
+    try:
+        yield db
+        db.commit()
+    finally:
+        db.close()
+
 # --- Création du schéma avant la session de test ---
 @pytest.fixture(scope="session", autouse=True)
 def setup_database():

@@ -24,6 +24,8 @@ Base = declarative_base()
 # pour chaque requête API et qu'elle est correctement fermée après.
 def get_db():
     db = SessionLocal() # Ouvre une nouvelle session
+    if db.bind.dialect.name == "sqlite":
+        db.execute("PRAGMA foreign_keys=ON")
     try:
         yield db       # Passe la session au code qui l'a demandée
     finally:

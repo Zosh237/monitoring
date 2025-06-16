@@ -61,7 +61,7 @@ def delete_expected_backup_job(db: Session, job_id: int) -> Optional[ExpectedBac
     """
     Supprime un job de sauvegarde attendu par son ID.
     """
-    db_job = db.query(ExpectedBackupJob).filter(ExpectedBackupJob.id == job_id).first()
+    db_job = db.query(ExpectedBackupJob).filter(ExpectedBackupJob.id == job_id).first() #db.query(ExpectedBackupJob).filter(ExpectedBackupJob.id == job_id).first()
     if db_job:
         db.delete(db_job)
         db.commit()
