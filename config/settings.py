@@ -14,8 +14,9 @@ class Settings(BaseSettings):
     Classe de configuration de l'application.
     Les paramètres sont chargés à partir des variables d'environnement ou d'un fichier .env.
     """
-    BACKUP_STORAGE_ROOT: str = "/mnt/backups"  # ✅ Remplace temporairement
-    VALIDATED_BACKUPS_BASE_PATH: str = "/mnt/backups/validated"
+    # ✅ Remplace temporairement
+    BACKUP_STORAGE_ROOT: str = "/monitoring/test_manuel/"  
+    VALIDATED_BACKUPS_BASE_PATH: str = "/monittoring/validate/"
     
     # Configuration de la base de données
     DATABASE_URL: str = Field(

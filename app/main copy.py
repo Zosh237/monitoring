@@ -45,13 +45,13 @@ Base.metadata.create_all(bind=engine)
 @app.on_event("startup")
 async def startup_event():
     logger.info("Démarrage de l'application FastAPI...")
-    start_scheduler()  # Démarre le scheduler qui lancera automatiquement le nouveau scanner
+    start_scheduler()
     logger.info("Application prête.")
 
 @app.on_event("shutdown")
 async def shutdown_event():
     logger.info("Arrêt de l'application FastAPI...")
-    shutdown_scheduler()  # Arrête le scheduler proprement
+    shutdown_scheduler()
     logger.info("Application arrêtée.")
 
 @app.get("/")
@@ -59,6 +59,7 @@ async def root():
     return {"message": "API de Surveillance des Sauvegardes est en ligne"}
 
 # Inclusion des routeurs avec des préfixes de route explicites :
+# Les endpoints Expected Backup Jobs seront accessibles sous "/api/v1/expected-backup-jobs"
 app.include_router(
     expected_backup_jobs.router,
     prefix=f"{settings.API_V1_STR}/expected-backup-jobs",
