@@ -1,53 +1,74 @@
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, ConfigDict
-from app.models.models import JobStatus, BackupFrequency
+from pydantic import BaseModel
+import enum
 
+# Enumération pour le statut d'un ExpectedBackupJob
+class JobStatusEnum(str, enum.Enum):
+    UNKNOWN = "UNKNOWN"        # Statut inconnu ou non évalué
+    SUCCESS = "SUCCESS"        # Sauvegarde réussie
+    MISSING = "MISSING"        # Sauvegarde manquante
+    HASH_MISMATCH = "HASH_MISMATCH"  # Hachage ne correspondant pas
+
+# Schéma de base pour ExpectedBackupJob, utilisé pour la création et la modification via l'API
 class ExpectedBackupJobBase(BaseModel):
-    """Schéma de base pour les données d'un ExpectedBackupJob."""
+    # Année associée au job (ex : 2025)
     year: int
-    database_name: str
-    agent_id_responsible: str
+    # Nom de l'entreprise possédant ce job
     company_name: str
+    # Ville de l'agence correspondante
     city: str
-    neighborhood: str
-    expected_hour_utc: int
-    expected_minute_utc: int
-    expected_frequency: BackupFrequency
-    days_of_week: str
+    # Quartier ou zone spécifique de l'agence
+    neighborhood: str  
+    # Nom de la base de données concernée par la sauvegarde
+    database_name: str
+    # Identifiant de l'agent responsable de ce job
+    agent_id_responsible: str
+    # Chemin template pour le dépôt des fichiers de base de données envoyé par l'agent
     agent_deposit_path_template: str
+    # Chemin template pour le dépôt des logs de l'agent (ex: {agent_id}/log/)
     agent_log_deposit_path_template: str
+    # Chemin template pour le dépôt final des sauvegardes validées
     final_storage_path_template: str
+    # Statut actuel du job, avec l'énumération associée
+    current_status: JobStatusEnum
+    # Date et heure de la dernière vérification effectuée
+    last_checked_timestamp: Optional[datetime] = None
+    # Date et heure de la dernière sauvegarde réussie
+    last_successful_backup_timestamp: Optional[datetime] = None
+    # Liste ou chaîne des destinataires de notification, si applicable
+    notification_recipients: Optional[str] = None
+    # Indique si ce job est activé
+    is_active: bool
 
-    model_config = ConfigDict(from_attributes=True, use_enum_values=True)
-
+# Schéma pour la création d'un ExpectedBackupJob (identique à la base)
 class ExpectedBackupJobCreate(ExpectedBackupJobBase):
-    """Schéma pour la création d'un ExpectedBackupJob."""
     pass
 
+# Schéma pour la mise à jour d'un ExpectedBackupJob - tous les champs sont optionnels
 class ExpectedBackupJobUpdate(BaseModel):
-    """Schéma pour la mise à jour d'un ExpectedBackupJob (tous les champs sont optionnels)."""
     year: Optional[int] = None
-    database_name: Optional[str] = None
-    agent_id_responsible: Optional[str] = None
     company_name: Optional[str] = None
     city: Optional[str] = None
-    neighborhood: Optional[str] = None
-    expected_hour_utc: Optional[int] = None
-    expected_minute_utc: Optional[int] = None
-    expected_frequency: Optional[BackupFrequency] = None
-    days_of_week: Optional[str] = None
+    neighborhood: Optional[str] = None  
+    database_name: Optional[str] = None
+    agent_id_responsible: Optional[str] = None
     agent_deposit_path_template: Optional[str] = None
     agent_log_deposit_path_template: Optional[str] = None
     final_storage_path_template: Optional[str] = None
+    current_status: Optional[JobStatusEnum] = None
+    last_checked_timestamp: Optional[datetime] = None
+    last_successful_backup_timestamp: Optional[datetime] = None
+    notification_recipients: Optional[str] = None
+    is_active: Optional[bool] = None
 
-    model_config = ConfigDict(from_attributes=True, use_enum_values=True)
-
-class ExpectedBackupJobInDB(ExpectedBackupJobBase):
-    """Schéma pour la représentation d'un ExpectedBackupJob tel qu'il est stocké en DB."""
+# Schéma complet retourné par l'API, incluant l'id et les métadonnées temporelles
+class ExpectedBackupJob(ExpectedBackupJobBase):
     id: int
-    current_status: JobStatus
-    last_checked_at_utc: Optional[datetime] = None
-    last_successful_backup_utc: Optional[datetime] = None
-    last_failed_backup_utc: Optional[datetime] = None
+    # Date de création de l'enregistrement
     created_at: datetime
+    # Date de dernière modification de l'enregistrement
+    updated_at: Optional[datetime] = None
+
+    class Config:
+        orm_mode = True  # Permet de convertir un objet ORM en ce schéma Pydantic

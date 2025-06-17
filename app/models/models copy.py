@@ -19,12 +19,12 @@ class JobStatus(str, enum.Enum):
     TRANSFER_INTEGRITY_FAILED = "transfer_integrity_failed"
     UNKNOWN = "unknown"
 
-#class BackupFrequency(str, enum.Enum):
-#    DAILY = "daily"
-#    WEEKLY = "weekly"
-#    MONTHLY = "monthly"
-#    HOURLY = "hourly"
-#    ONCE = "once"
+class BackupFrequency(str, enum.Enum):
+    DAILY = "daily"
+    WEEKLY = "weekly"
+    MONTHLY = "monthly"
+    HOURLY = "hourly"
+    ONCE = "once"
 
 class BackupEntryStatus(str, enum.Enum):
     SUCCESS = "success"
@@ -45,12 +45,12 @@ class ExpectedBackupJob(Base):
     city = Column(String, nullable=False, index=True, comment="Ville de l'agence")
     neighborhood = Column(String, nullable=False, index=True, comment="Quartier ou zone spécifique de l'agence") # NOUVEAU CHAMP
     database_name = Column(String, nullable=False, index=True, comment="Nom de la base de données")
-    #expected_hour_utc = Column(Integer, nullable=False, comment="Heure attendue de fin de sauvegarde (UTC)")
-    #expected_minute_utc = Column(Integer, nullable=False, comment="Minute attendue de fin de sauvegarde (UTC)")
+    expected_hour_utc = Column(Integer, nullable=False, comment="Heure attendue de fin de sauvegarde (UTC)")
+    expected_minute_utc = Column(Integer, nullable=False, comment="Minute attendue de fin de sauvegarde (UTC)")
     
     __table_args__ = (
         UniqueConstraint('year', 'company_name', 'city', 'neighborhood', 'database_name', # AJUSTÉ: Ajout de 'neighborhood'
-                       
+                       'expected_hour_utc', 'expected_minute_utc',
                        name='_unique_job_config'),
     )
 
@@ -61,16 +61,15 @@ class ExpectedBackupJob(Base):
     agent_log_deposit_path_template = Column(String, nullable=False, comment="Template du chemin de dépôt du dossier des logs par l'agent (ex: {agent_id}/log/)") 
     final_storage_path_template = Column(String, nullable=False, comment="Template du chemin final de stockage des sauvegardes validées")
 
-    #expected_frequency = Column(SQLEnum(*[f.value for f in BackupFrequency]), nullable=False)
-    #days_of_week = Column(String, nullable=False)
+    expected_frequency = Column(SQLEnum(*[f.value for f in BackupFrequency]), nullable=False)
+    days_of_week = Column(String, nullable=False)
     current_status = Column(SQLEnum(*[s.value for s in JobStatus]), default=JobStatus.UNKNOWN.value, nullable=False)
     last_checked_timestamp = Column(DateTime, nullable=True)
     last_successful_backup_timestamp = Column(DateTime, nullable=True)
     notification_recipients = Column(String, nullable=True)
-    
     is_active = Column(Boolean, default=True, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow, comment="Date de création")
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, comment="Date de dernière mise à jour")
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relation avec les entrées d'historique de sauvegarde   ....................MODIF
     backup_entries = relationship("BackupEntry"
@@ -116,24 +115,24 @@ class BackupEntry(Base):
     agent_id = Column(String, nullable=True, comment="ID de l'agent ayant produit le rapport")
     agent_overall_status = Column(String, nullable=True, comment="Statut global de l'opération rapporté par l'agent")
 
-    #agent_backup_process_status = Column(Boolean, nullable=True)
-    #agent_backup_process_start_time = Column(DateTime, nullable=True)
-    #agent_backup_process_timestamp = Column(DateTime, nullable=True)
-    #agent_backup_hash_pre_compress = Column(String(64), nullable=True)
-    #agent_backup_size_pre_compress = Column(BigInteger, nullable=True)
+    agent_backup_process_status = Column(Boolean, nullable=True)
+    agent_backup_process_start_time = Column(DateTime, nullable=True)
+    agent_backup_process_timestamp = Column(DateTime, nullable=True)
+    agent_backup_hash_pre_compress = Column(String(64), nullable=True)
+    agent_backup_size_pre_compress = Column(BigInteger, nullable=True)
 
-    #agent_compress_process_status = Column(Boolean, nullable=True)
-    #agent_compress_process_start_time = Column(DateTime, nullable=True)
-    #agent_compress_process_timestamp = Column(DateTime, nullable=True)
-    #agent_compress_hash_post_compress = Column(String(64), nullable=True)
-    #agent_compress_size_post_compress = Column(BigInteger, nullable=True)
+    agent_compress_process_status = Column(Boolean, nullable=True)
+    agent_compress_process_start_time = Column(DateTime, nullable=True)
+    agent_compress_process_timestamp = Column(DateTime, nullable=True)
+    agent_compress_hash_post_compress = Column(String(64), nullable=True)
+    agent_compress_size_post_compress = Column(BigInteger, nullable=True)
 
-    #agent_transfer_process_status = Column(Boolean, nullable=True)
-    #agent_transfer_process_start_time = Column(DateTime, nullable=True)
-    #agent_transfer_process_timestamp = Column(DateTime, nullable=True)
-    #agent_transfer_error_message = Column(Text, nullable=True)
-    #agent_staged_file_name = Column(String, nullable=True)
-    #agent_logs_summary = Column(Text, nullable=True)
+    agent_transfer_process_status = Column(Boolean, nullable=True)
+    agent_transfer_process_start_time = Column(DateTime, nullable=True)
+    agent_transfer_process_timestamp = Column(DateTime, nullable=True)
+    agent_transfer_error_message = Column(Text, nullable=True)
+    agent_staged_file_name = Column(String, nullable=True)
+    agent_logs_summary = Column(Text, nullable=True)
 
     # Champs de validation côté serveur
     server_calculated_staged_hash = Column(String(64), nullable=True, comment="Hachage du fichier dans la zone de dépôt calculé par le serveur")

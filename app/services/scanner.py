@@ -49,6 +49,7 @@ class BackupScanner:
         logger.debug("BackupScanner initialisé.")
 
     def scan_all_jobs(self) -> None:
+
         """
         Point d'entrée principal du scanner. Exécute les 3 phases séquentielles :
         Phase 1 : Collecte et traitement initial de tous les rapports d'agents
@@ -56,6 +57,9 @@ class BackupScanner:
         Phase 3 : Archivage des rapports STATUS.json traités
         """
         self.logger.info("Début du scan de tous les jobs de sauvegarde.")
+        self.logger.info(f"📂 Racine BACKUP = {self.settings.BACKUP_STORAGE_ROOT}")
+        self.logger.info(f"🕓 Fenêtre de collecte = ±{self.settings.SCANNER_REPORT_COLLECTION_WINDOW_MINUTES} minutes")
+
         
         # Réinitialisation des structures pour cette exécution
         self.all_relevant_reports_map.clear()
@@ -477,18 +481,43 @@ class BackupScanner:
         
         self.logger.info(f"Job {job.database_name} marqué MISSING pour le cycle du {target_date}")
 
+    #def _find_status_files_for_agent(
+    #    self, agent_log_dir: str, company_name: str, city: str, neighborhood: str
+    #) -> list:
+    #    """Recherche tous les fichiers STATUS.json pertinents pour un agent."""
+    #    status_files = []
+    #    expected_pattern = rf"^\d{{8}}_\d{{6}}_{re.escape(company_name)}_{re.escape(city)}_{re.escape(neighborhood)}\.json$"
+        
+    #    for filename in os.listdir(agent_log_dir):
+    #        if re.match(expected_pattern, filename, re.IGNORECASE):
+    #            status_files.append(os.path.join(agent_log_dir, filename))
+                
+    #    return status_files
+
     def _find_status_files_for_agent(
         self, agent_log_dir: str, company_name: str, city: str, neighborhood: str
     ) -> list:
         """Recherche tous les fichiers STATUS.json pertinents pour un agent."""
         status_files = []
-        expected_pattern = rf"^\d{{8}}_\d{{6}}_{re.escape(company_name)}_{re.escape(city)}_{re.escape(neighborhood)}\.json$"
         
+        # Format 1 : timestampé (production)
+        pattern_1 = rf"^\d{{8}}_\d{{6}}_{re.escape(company_name)}_{re.escape(city)}_{re.escape(neighborhood)}\.json$"
+        
+        # Format 2 : préfixé HORODATAGE (test manuel)
+        pattern_2 = rf"^HORODATAGE_{re.escape(company_name)}_{re.escape(city)}_{re.escape(neighborhood)}\.json$"
+
         for filename in os.listdir(agent_log_dir):
-            if re.match(expected_pattern, filename, re.IGNORECASE):
-                status_files.append(os.path.join(agent_log_dir, filename))
-                
+            if re.match(pattern_1, filename, re.IGNORECASE) or re.match(pattern_2, filename, re.IGNORECASE):
+                full_path = os.path.join(agent_log_dir, filename)
+                status_files.append(full_path)
+
+        if not status_files:
+            self.logger.warning(
+                f"🚫 Aucun STATUS.json trouvé pour {company_name}_{city}_{neighborhood} dans {agent_log_dir}"
+            )
+
         return status_files
+
 
     def _archive_invalid_agent_reports(self, agent_folder_path: str) -> None:
         """Archive tous les STATUS.json d'un agent invalide."""
@@ -502,6 +531,7 @@ class BackupScanner:
         for filename in os.listdir(log_dir):
             if filename.lower().endswith('.json'):
                 source_path = os.path.join(log_dir, filename)
+                self.logger.info(f"➡️ Scanner explore : {self.settings.agent_reports_root}")
                 self.status_files_to_archive.add(source_path)
 
     def _archive_single_status_file(self, status_file_path: str) -> None:

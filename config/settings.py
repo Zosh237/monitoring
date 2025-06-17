@@ -18,9 +18,14 @@ class Settings(BaseSettings):
         env="DATABASE_URL"
     )
 
+    API_V1_STR: str = Field("/api/v1",
+         env="API_V1_STR"
+    )
+
     # Chemin racine pour le stockage des sauvegardes sur le serveur
     BACKUP_STORAGE_ROOT: str = Field(
-        "/mnt/backups",
+        "test_manuel",
+        #"/mnt/backups",
         env="BACKUP_STORAGE_ROOT"
     )
 
@@ -74,6 +79,8 @@ class Settings(BaseSettings):
         env_file_encoding='utf-8',
         extra='ignore'
     )
+
+    
 
 settings = Settings()
 

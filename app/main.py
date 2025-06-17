@@ -58,5 +58,15 @@ async def shutdown_event():
 async def root():
     return {"message": "API de Surveillance des Sauvegardes est en ligne"}
 
-app.include_router(expected_backup_jobs.router, prefix=settings.API_V1_STR, tags=["Expected Backup Jobs"])
-app.include_router(backup_entries.router, prefix=settings.API_V1_STR, tags=["Backup Entries"])
+# Inclusion des routeurs avec des préfixes de route explicites :
+# Les endpoints Expected Backup Jobs seront accessibles sous "/api/v1/expected-backup-jobs"
+app.include_router(
+    expected_backup_jobs.router,
+    prefix=f"{settings.API_V1_STR}/expected-backup-jobs",
+    tags=["Expected Backup Jobs"]
+)
+app.include_router(
+    backup_entries.router,
+    prefix=f"{settings.API_V1_STR}/backup-entries",
+    tags=["Backup Entries"]
+)

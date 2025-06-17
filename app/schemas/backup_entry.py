@@ -1,33 +1,49 @@
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, ConfigDict
-from app.models.models import BackupEntryStatus
+from pydantic import BaseModel
+import enum
 
-#class BackupEntryCreate(BackupEntryBase):
-#    pass
+# Enumération pour le statut d'une entrée de sauvegarde
+class BackupEntryStatusEnum(str, enum.Enum):
+    UNKNOWN = "UNKNOWN"        # Statut inconnu
+    SUCCESS = "SUCCESS"        # Sauvegarde validée avec succès
+    MISSING = "MISSING"        # Sauvegarde introuvable
+    HASH_MISMATCH = "HASH_MISMATCH"  # Erreur de validation de hachage
 
-class BackupEntryInDB(BaseModel):
-    """Schéma pour la représentation d'un BackupEntry tel qu'il est stocké en DB."""
-    id: int
+# Schéma de base pour une BackupEntry, centralisant les informations essentielles
+class BackupEntryBase(BaseModel):
+    # Référence au job attendu par son identifiant
     expected_job_id: int
-    status: BackupEntryStatus
-    
+    # Horodatage de la détection par le serveur
     timestamp: datetime
-    agent_backup_hash_pre_compress: Optional[str] = None
-    agent_backup_size_pre_compress: Optional[int] = None
-
-    agent_compress_size_pre_compress: Optional[int] = None
-    agent_compress_size_post_compress: Optional[int] = None
-    agent_transfer_process_status: Optional[bool] = None
-    agent_transfer_process_start_time: Optional[datetime] = None
-    agent_transfer_process_timestamp: Optional[datetime] = None
-    agent_transfer_error_message: Optional[str] = None
-    agent_staged_file_name: Optional[str] = None
-    agent_logs_summary: Optional[str] = None
+    # Statut de l'entrée tel que déterminé par le scanner
+    status: BackupEntryStatusEnum
+    # Message détaillé décrivant l'événement ou l'erreur éventuelle
+    message: Optional[str] = None
+    # Nom du fichier STATUS.json ayant déclenché ce relevé
+    operation_log_file_name: Optional[str] = None
+    # Identifiant de l'agent ayant généré le rapport
+    agent_id: Optional[str] = None
+    # Statut global rapporté par l'agent
+    agent_overall_status: Optional[str] = None
+    # Hachage calculé du fichier validé sur le serveur
     server_calculated_staged_hash: Optional[str] = None
+    # Taille calculée du fichier validé sur le serveur
     server_calculated_staged_size: Optional[int] = None
-    hash_comparison_result: Optional[bool] = None
+    # Dernier hachage de sauvegarde globale réussie, utilisé pour comparer les sauvegardes successives
     previous_successful_hash_global: Optional[str] = None
+    # Résultat de la comparaison des hachages (True si différent, False si identique)
+    hash_comparison_result: Optional[bool] = None
+
+# Schéma utilisé lors de la création d'une BackupEntry via l'API
+class BackupEntryCreate(BackupEntryBase):
+    pass
+
+# Schéma complet retourné par l'API, incluant l'identifiant et la date de création
+class BackupEntry(BackupEntryBase):
+    id: int
+    # Date de création de l'entrée
     created_at: datetime
 
-    model_config = ConfigDict(from_attributes=True, use_enum_values=True) 
+    class Config:
+        orm_mode = True  # Permet la conversion d'un objet ORM en ce schéma Pydantic
