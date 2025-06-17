@@ -3,8 +3,8 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict
 from app.models.models import BackupEntryStatus
 
-class BackupEntryCreate(BackupEntryBase):
-    pass
+#class BackupEntryCreate(BackupEntryBase):
+#    pass
 
 class BackupEntryInDB(BaseModel):
     """Schéma pour la représentation d'un BackupEntry tel qu'il est stocké en DB."""
