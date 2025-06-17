@@ -12,12 +12,12 @@ from app.core.database import Base
 # --- Définition des Enums ---
 
 class JobStatus(str, enum.Enum):
-    OK = "ok"
-    FAILED = "failed"
-    MISSING = "missing"
-    HASH_MISMATCH = "hash_mismatch"
-    TRANSFER_INTEGRITY_FAILED = "transfer_integrity_failed"
-    UNKNOWN = "unknown"
+    #OK = "OK"
+    SUCCESS = "SUCCESS"
+    MISSING = "MISSING"
+    HASH_MISMATCH = "HASH_MISMATCH"
+    #RANSFER_INTEGRITY_FAILED = "TRANSFER_INTEGRITY_FAILED"
+    UNKNOWN = "UNKNOWN"
 
 #class BackupFrequency(str, enum.Enum):
 #    DAILY = "daily"
@@ -27,12 +27,12 @@ class JobStatus(str, enum.Enum):
 #    ONCE = "once"
 
 class BackupEntryStatus(str, enum.Enum):
-    SUCCESS = "success"
-    FAILED = "failed"
-    MISSING = "missing"
-    HASH_MISMATCH = "hash_mismatch"
-    TRANSFER_INTEGRITY_FAILED = "transfer_integrity_failed"
-    UNKNOWN = "unknown"
+    SUCCESS = "SUCCESS"
+    FAILED = "FAILED"
+    MISSING = "MISSING"
+    HASH_MISMATCH = "HASH_MISMATCH"
+    TRANSFER_INTEGRITY_FAILED = "TRANSFER_INTEGRITY_FAILED"
+    UNKNOWN = "UNKNOWN"
 
 
 # --- TABLE 1: ExpectedBackupJob ---
@@ -63,7 +63,10 @@ class ExpectedBackupJob(Base):
 
     #expected_frequency = Column(SQLEnum(*[f.value for f in BackupFrequency]), nullable=False)
     #days_of_week = Column(String, nullable=False)
-    current_status = Column(SQLEnum(*[s.value for s in JobStatus]), default=JobStatus.UNKNOWN.value, nullable=False)
+    
+    #current_status = Column(SQLEnum(*[s.value for s in JobStatus]), default=JobStatus.UNKNOWN.value, nullable=False)
+    current_status = Column(String, nullable=False, default=JobStatus.UNKNOWN.value)  # Utiliser la valeur de l'énumération
+    
     last_checked_timestamp = Column(DateTime, nullable=True)
     last_successful_backup_timestamp = Column(DateTime, nullable=True)
     notification_recipients = Column(String, nullable=True)
@@ -110,6 +113,8 @@ class BackupEntry(Base):
     timestamp = Column(DateTime, default=datetime.utcnow, nullable=False, comment="Horodatage de la détection par le serveur")
     status = Column(SQLEnum(*[s.value for s in BackupEntryStatus]), nullable=False, index=True)
     message = Column(Text, nullable=True, comment="Message détaillé sur l'événement")
+    
+    calculated_hash = Column(String, nullable=True) 
     
     # Champs provenant du rapport STATUS.json de l'agent
     operation_log_file_name = Column(String, nullable=True, comment="Nom du fichier STATUS.json global ayant déclenché cette entrée")

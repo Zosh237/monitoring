@@ -6,12 +6,17 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional, List
 import os
 
+
+
+
 class Settings(BaseSettings):
     """
     Classe de configuration de l'application.
     Les paramètres sont chargés à partir des variables d'environnement ou d'un fichier .env.
     """
-
+    BACKUP_STORAGE_ROOT: str = "/mnt/backups"  # ✅ Remplace temporairement
+    VALIDATED_BACKUPS_BASE_PATH: str = "/mnt/backups/validated"
+    
     # Configuration de la base de données
     DATABASE_URL: str = Field(
         "sqlite:///./data/db/sql_app.db",
@@ -22,20 +27,9 @@ class Settings(BaseSettings):
          env="API_V1_STR"
     )
 
-    # Chemin racine pour le stockage des sauvegardes sur le serveur
-    BACKUP_STORAGE_ROOT: str = Field(
-        "test_manuel",
-        #"/mnt/backups",
-        env="BACKUP_STORAGE_ROOT"
-    )
 
     # Chemin pour le stockage final des sauvegardes validées
     # C'est là que backup_manager déplacera les fichiers.
-    VALIDATED_BACKUPS_BASE_PATH: str = Field( # NOUVEAU CHAMP AJOUTÉ
-        "/mnt/backups/validated", # Chemin par défaut pour les sauvegardes validées
-        env="VALIDATED_BACKUPS_BASE_PATH"
-    )
-
     # Intervalle de planification du scanner de sauvegardes en minutes
     SCANNER_INTERVAL_MINUTES: int = int(os.getenv("SCANNER_INTERVAL_MINUTES", 15))
     
@@ -83,10 +77,3 @@ class Settings(BaseSettings):
     
 
 settings = Settings()
-
-
-# Ancien
-#field_name = Field(env="ENV_VAR_NAME")
-
-# Nouveau  
-#field_name = Field(json_schema_extra={"env": "ENV_VAR_NAME"})

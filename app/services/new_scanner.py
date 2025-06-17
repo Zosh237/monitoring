@@ -130,7 +130,7 @@ class NewBackupScanner:
             timestamp=datetime.now(timezone.utc),
             status=status,
             message=f"Backup traité avec le statut {status}",
-            source_file_path=backup_file_path,
+            ##source_file_path=backup_file_path,
             calculated_hash=file_hash
         )
         self.session.add(new_entry)

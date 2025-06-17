@@ -1,13 +1,13 @@
 # tests/conftest.py
 import pytest
 from fastapi.testclient import TestClient
-from app.core.database import Base, engine, SessionLocal
+from app.core.database import Base, test_engine, TestSessionLocal
 from app.models.models import ExpectedBackupJob, BackupEntry
 from app.main import app  # L'application FastAPI
 
 @pytest.fixture
 def test_db():
-    db = SessionLocal()
+    db = TestSessionLocal()
     if db.bind.dialect.name == "sqlite":
         db.execute("PRAGMA foreign_keys=ON")
     try:
@@ -24,10 +24,10 @@ def setup_database():
     et les détruit à la fin.
     """
     # Assurez-vous que tous les modèles sont importés pour être inclus dans Base.metadata
-    Base.metadata.create_all(bind=engine)
+    Base.metadata.create_all(bind=test_engine)
     print("Tables créées :", list(Base.metadata.tables.keys()))
     yield
-    Base.metadata.drop_all(bind=engine)
+    Base.metadata.drop_all(bind=test_engine)
 
 # --- Nettoyage des tables avant chaque test ---
 @pytest.fixture(autouse=True)
@@ -36,7 +36,7 @@ def clean_tables():
     Vide les tables ExpectedBackupJob et BackupEntry avant chaque test
     afin de garantir un environnement propre.
     """
-    db = SessionLocal()
+    db = TestSessionLocal()
     db.query(BackupEntry).delete()
     db.query(ExpectedBackupJob).delete()
     db.commit()
