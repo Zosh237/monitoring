@@ -90,8 +90,8 @@ class ExpectedBackupJob(Base):
         return (f"<ExpectedBackupJob(company='{self.company_name}', city='{self.city}', "
                 f"neighborhood='{self.neighborhood}', db='{self.database_name}', year={self.year}, " # AJUSTÉ: Ajout de 'neighborhood'
                 f"agent='{self.agent_id_responsible}', "
-                f"expected_time={self.expected_hour_utc:02d}:{self.expected_minute_utc:02d} UTC, "
-                f"status='{self.current_status.value}')>")
+                #f"expected_time={self.expected_hour_utc:02d}:{self.expected_minute_utc:02d} UTC, "
+                f"status='{self.current_status}')>")
 
 
 # --- TABLE 2: BackupEntry ---

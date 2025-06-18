@@ -14,9 +14,12 @@ class Settings(BaseSettings):
     Classe de configuration de l'application.
     Les paramètres sont chargés à partir des variables d'environnement ou d'un fichier .env.
     """
-    # ✅ Remplace temporairement
-    BACKUP_STORAGE_ROOT: str = "/monitoring/test_manuel/"  
-    VALIDATED_BACKUPS_BASE_PATH: str = "/monittoring/validate/"
+    
+    BACKUP_STORAGE_ROOT: str  = Field(
+        "test_manuel",
+        env="BACKUP_STORAGE_ROOT"
+    )  
+    VALIDATED_BACKUPS_BASE_PATH: str = "validate"
     
     # Configuration de la base de données
     DATABASE_URL: str = Field(
@@ -32,7 +35,10 @@ class Settings(BaseSettings):
     # Chemin pour le stockage final des sauvegardes validées
     # C'est là que backup_manager déplacera les fichiers.
     # Intervalle de planification du scanner de sauvegardes en minutes
-    SCANNER_INTERVAL_MINUTES: int = int(os.getenv("SCANNER_INTERVAL_MINUTES", 15))
+    SCANNER_INTERVAL_MINUTES: int = Field(
+        1,
+        env="SCANNER_INTERVAL_MINUTES"
+    )
     
     # Nouvelle variable : Fenêtre de temps en minutes pendant laquelle un rapport STATUS.json
     # est considéré comme pertinent après l'heure attendue du job.

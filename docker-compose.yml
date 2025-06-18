@@ -1,17 +1,17 @@
-version: '3.8'
+version: '3.9'
 
 services:
-  app:
-    build: .
+  scanner-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: monitoring_uvicorn
+    environment:
+      - BACKUP_STORAGE_ROOT=/mnt/backups
+      - VALIDATED_BACKUPS_BASE_PATH=/mnt/validated
+    volumes:
+      - ./backup-data:/mnt/backups
+      - ./validated-backups:/mnt/validated
     ports:
       - "8000:8000"
-    volumes:
-      - ./app:/app
-      - backup_storage:/mnt/backups
-      - sqlite_data:/app/data/db
-    environment:
-      DATABASE_URL: "sqlite:///./data/db/sql_app.db"
-
-volumes:
-  backup_storage:
-  sqlite_data:
+    restart: always
