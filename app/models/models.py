@@ -115,6 +115,8 @@ class BackupEntry(Base):
     message = Column(Text, nullable=True, comment="Message détaillé sur l'événement")
     
     calculated_hash = Column(String, nullable=True) 
+    #expected_hash = Column(String, nullable=True) 
+    
     
     # Champs provenant du rapport STATUS.json de l'agent
     operation_log_file_name = Column(String, nullable=True, comment="Nom du fichier STATUS.json global ayant déclenché cette entrée")

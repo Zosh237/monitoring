@@ -78,7 +78,7 @@ def notify_backup_status_change(
         return
 
     # Détermine le sujet de l'e-mail basé sur le statut
-    status_label = backup_entry.status.value.upper().replace('_', ' ')
+    status_label = backup_entry.status.upper().replace('_', ' ')
     subject = f"ALERTE SAUVEGARDE - {job.database_name} - {status_label}"
 
     # Construit le corps de l'e-mail
@@ -91,18 +91,18 @@ def notify_backup_status_change(
         f"  Agent Responsable      : {job.agent_id_responsible}\n"
         f"  Compagnie              : {job.company_name}\n"
         f"  Ville                  : {job.city}\n"
-        f"  Statut global du Job   : {job.current_status.value.upper()}\n\n"
+        f"  Statut global du Job   : {job.current_status.upper()}\n\n"
         f"--- Détails de l'Entrée de Sauvegarde Détectée ---\n"
         f"  ID Entrée              : {backup_entry.id}\n"
-        f"  Statut de l'entrée     : {backup_entry.status.value.upper()}\n"
-        f"  Horodatage Agent       : {backup_entry.agent_report_timestamp_utc.isoformat() if backup_entry.agent_report_timestamp_utc else 'N/A'}\n"
-        f"  Message d'erreur Agent : {backup_entry.agent_transfer_error_message or 'Aucun message spécifique de l\'agent.'}\n"
-        f"  Hachage Attendu (Agent): {backup_entry.agent_reported_hash_sha256 or 'N/A'}\n"
+        f"  Statut de l'entrée     : {backup_entry.status.upper()}\n"
+        #f"  Horodatage Agent       : {backup_entry.agent_report_timestamp_utc.isoformat() if backup_entry.agent_report_timestamp_utc else 'N/A'}\n"
+        #f"  Message d'erreur Agent : {backup_entry.agent_transfer_error_message or 'Aucun message spécifique de l\'agent.'}\n"
+        f"  Hachage Attendu (Agent): {backup_entry.calculated_hash or 'N/A'}\n"
         f"  Hachage Calculé (Serveur): {backup_entry.server_calculated_staged_hash or 'N/A'}\n"
-        f"  Taille Agent (octets)  : {backup_entry.agent_reported_size_bytes or 'N/A'}\n"
-        f"  Taille Calculée (Serveur): {backup_entry.server_calculated_staged_size or 'N/A'}\n"
+        #f"  Taille Agent (octets)  : {backup_entry.agent_reported_size_bytes or 'N/A'}\n"
+        #f"  Taille Calculée (Serveur): {backup_entry.server_calculated_staged_size or 'N/A'}\n"
         f"  Comparaison Hachage    : {'Non conforme' if backup_entry.hash_comparison_result else 'Conforme' if backup_entry.hash_comparison_result is False else 'N/A'}\n"
-        f"  Résumé des logs Agent  : {backup_entry.agent_logs_summary or 'Aucun résumé.'}\n\n"
+        #f"  Résumé des logs Agent  : {backup_entry.agent_logs_summary or 'Aucun résumé.'}\n\n"
         f"Veuillez prendre les mesures nécessaires pour investiguer et résoudre ce problème.\n\n"
         f"Cordialement,\n"
         f"Votre Système de Surveillance des Sauvegardes Automatisé"
@@ -111,7 +111,7 @@ def notify_backup_status_change(
     # Envoie la notification si une adresse d'administrateur est configurée
     if settings.ADMIN_EMAIL_RECIPIENT:
         try:
-            logger.info(f"Déclenchement de la notification pour le job '{job.database_name}' avec le statut '{backup_entry.status.value}'.")
+            logger.info(f"Déclenchement de la notification pour le job '{job.database_name}' avec le statut '{backup_entry.status}'.")
             send_email_notification(settings.ADMIN_EMAIL_RECIPIENT, subject, body)
         except NotificationError as e:
             # L'erreur a déjà été loguée dans send_email_notification

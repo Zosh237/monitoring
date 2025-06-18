@@ -34,6 +34,7 @@ class BackupEntryBase(BaseModel):
     previous_successful_hash_global: Optional[str] = None
     # Résultat de la comparaison des hachages (True si différent, False si identique)
     hash_comparison_result: Optional[bool] = None
+    #calculated_hash: Optional[str] = None
 
 # Schéma utilisé lors de la création d'une BackupEntry via l'API
 class BackupEntryCreate(BackupEntryBase):
