@@ -9,7 +9,8 @@ class BackupEntryStatusEnum(str, enum.Enum):
     SUCCESS = "SUCCESS"        # Sauvegarde validée avec succès
     MISSING = "MISSING"        # Sauvegarde introuvable
     HASH_MISMATCH = "HASH_MISMATCH"  # Erreur de validation de hachage
-    FAILDE = "FAILED"
+    FAILED = "FAILED"
+    UNCHANGED = "UNCHANGED"
 
 # Schéma de base pour une BackupEntry, centralisant les informations essentielles
 class BackupEntryBase(BaseModel):
@@ -35,7 +36,7 @@ class BackupEntryBase(BaseModel):
     previous_successful_hash_global: Optional[str] = None
     # Résultat de la comparaison des hachages (True si différent, False si identique)
     hash_comparison_result: Optional[bool] = None
-    #calculated_hash: Optional[str] = None
+    expected_hash: Optional[str] = None
 
 # Schéma utilisé lors de la création d'une BackupEntry via l'API
 class BackupEntryCreate(BackupEntryBase):

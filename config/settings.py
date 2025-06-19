@@ -66,7 +66,7 @@ class Settings(BaseSettings):
     try:
         EMAIL_PORT: int = int(os.getenv("EMAIL_PORT", 587) )
     except ValueError:
-        EMAIL_PORT:int = 587
+        EMAIL_PORT:int=587
 
     EMAIL_USERNAME: Optional[str] = os.getenv("EMAIL_USERNAME")
     EMAIL_PASSWORD: Optional[str] = os.getenv("EMAIL_PASSWORD")

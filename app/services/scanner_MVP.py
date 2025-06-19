@@ -60,10 +60,8 @@ def process_expected_job(job, databases_data, agent_databases_folder, agent_id, 
     computed_hash = None
     staged_file_name = None
     backup_file_path = None
-    status = "MISSING"
     message = ""
 
-    
     if job.database_name in databases_data:
         data = databases_data[job.database_name]
         staged_file_name = data.get("staged_file_name")
@@ -74,64 +72,80 @@ def process_expected_job(job, databases_data, agent_databases_folder, agent_id, 
         if os.path.exists(backup_file_path):
             try:
                 computed_hash = calculate_file_sha256(backup_file_path)
+                print(f"++++++computed_hash:{computed_hash} expected_hash:{expected_hash}+++++++++")
                 if computed_hash != expected_hash:
-                    status = "FAILED"
-                    message = "Hash calculé différent du hash attendu."
-                elif job.calculated_hash is None or job.calculated_hash != computed_hash:
-                    status = "SUCCESS"
-                    job.calculated_hash = computed_hash
-                    ###CHANGEMENT
-                    if not job.previous_successful_hash_global:
-                        job.previous_successful_hash_global = computed_hash
-                        message = "Backup validé (premier succès)."
-                        print(f"🔐 Premier succès — hash de référence enregistré pour {job.database_name}")
-                    else:
-                        message = "Backup validé et mis à jour."
-                    try:
-                        validated_path = os.path.join(settings.VALIDATED_BACKUPS_BASE_PATH, staged_file_name)
-                        shutil.copy2(backup_file_path, validated_path)
-                    except Exception as copy_err:
-                        status = "FAILED"
-                        message += f" / Copie échouée : {copy_err}"
+                    job.current_status = "FAILED"
+                    message = "Hash calculé différent du hash déclaré dans le rapport."
                 else:
-                    status = "HASH_MISMATCH"
-                    message = "Backup inchangé entre deux scans (HASH_MISMATCH)."
+                    job.last_successful_backup_timestamp=now
+                    # Hash validé par l'agent — on entre en zone promotion
+                    if job.previous_successful_hash_global:
+                        if computed_hash == job.previous_successful_hash_global:
+                            job.current_status = "UNCHANGED"
+                            message = "Backup identique à la dernière version validée."
+                        else:
+                            job.current_status = "SUCCESS"
+                            
+                            job.previous_successful_hash_global = computed_hash
+                            message = "Nouveau backup validé avec contenu mis à jour."
+                            try:
+                                validated_path = os.path.join(settings.VALIDATED_BACKUPS_BASE_PATH, job.company_name,job.city, str(job.year))
+                                job.file_storage_path_template = os.path.join(validated_path, staged_file_name)
+                                os.makedirs(validated_path, exist_ok=True)
+                                shutil.copy2(backup_file_path, os.path.join(validated_path, staged_file_name))
+                            except Exception as copy_err:
+                                job.current_status = "FAILED"
+                                message += f" / Copie échouée : {copy_err}"
+                    else:
+                        job.current_status = "SUCCESS"
+                        job.previous_successful_hash_global = computed_hash
+                        message = "Premier succès validé."
+                        try:
+                            validated_path = os.path.join(settings.VALIDATED_BACKUPS_BASE_PATH, job.company_name,job.city, str(job.year))
+                            job.file_storage_path_template = os.path.join(validated_path, staged_file_name)
+                            os.makedirs(validated_path, exist_ok=True)
+                            shutil.copy2(backup_file_path, os.path.join(validated_path, staged_file_name))
+                        except Exception as copy_err:
+                            job.current_status = "FAILED"
+                            message += f" / Copie échouée : {copy_err}"
             except Exception as hash_error:
-                status = "FAILED"
+                job.current_status = "FAILED"
                 message = f"Erreur lors du calcul du hash : {hash_error}"
         else:
             message = f"Fichier backup introuvable : {staged_file_name}"
     else:
+        job.current_status = "MISSING"
         message = "Aucune entrée dans le rapport pour ce job."
 
     # Mise à jour du job
-    job.current_status = status
     job.last_checked_timestamp = now
-    if message:
-        job.error_message = message
+        
+    
         
     # Création de l'entrée BackupEntry enrichie
     backup_entry = BackupEntry(
         expected_job_id=job.id,
         timestamp=now,
-        status=status,
+        status=job.current_status,
         message=message,
-        calculated_hash=computed_hash or "",
-        #expected_hash = job.previous_successful_hash_global or "",
+        expected_hash = expected_hash,#job.previous_successful_hash_global or "",
         operation_log_file_name=operation_log_file_name,
         agent_id=agent_id,
         agent_overall_status=agent_status,
         server_calculated_staged_hash=computed_hash or "",
         server_calculated_staged_size=os.path.getsize(backup_file_path) if backup_file_path and os.path.exists(backup_file_path) else None,
         
-        #previous_successful_hash_global=job.calculated_hash,
-        #hash_comparison_result=(computed_hash != job.calculated_hash) if computed_hash and job.calculated_hash else None,
+        previous_successful_hash_global=job.previous_successful_hash_global,
+        hash_comparison_result= True if ((computed_hash == expected_hash) and (computed_hash and expected_hash)) else False,
+        
         created_at=now
     )
 
     db_session.add(job)
     db_session.add(backup_entry)
-    if status != "SUCCESS":
+    ##db_session.flush() #force l'insertion SQL sans commit pour récupérer l'ID
+    
+    if job.current_status in ["MISSING", "UNCHANGED", "FAILED" ]:
         try:
             print(f"************ DEBUT NOTIFICATION *************")
             notify_backup_status_change(job, backup_entry, expected_hash)
@@ -139,7 +153,7 @@ def process_expected_job(job, databases_data, agent_databases_folder, agent_id, 
             print(f"Echec de l'envoi de la notification {e}")
         except Exception as e:
             print(f"Une erreur inattendue est survenue {e}")
-        send_notification(job, message)
+            send_notification(job, message)
 
 # ------------------------------------------------------------------------------
 # Traitement complet d'un rapport JSON pour un agent donné

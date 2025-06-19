@@ -16,6 +16,7 @@ class JobStatus(str, enum.Enum):
     SUCCESS = "SUCCESS"
     MISSING = "MISSING"
     HASH_MISMATCH = "HASH_MISMATCH"
+    UNCHANGED = "UNCHANGED" 
     #RANSFER_INTEGRITY_FAILED = "TRANSFER_INTEGRITY_FAILED"
     UNKNOWN = "UNKNOWN"
 
@@ -114,8 +115,8 @@ class BackupEntry(Base):
     status = Column(SQLEnum(*[s.value for s in BackupEntryStatus]), nullable=False, index=True)
     message = Column(Text, nullable=True, comment="Message détaillé sur l'événement")
     
-    calculated_hash = Column(String, nullable=True) 
-    #expected_hash = Column(String, nullable=True) 
+    #calculated_hash = Column(String, nullable=True) 
+    expected_hash = Column(String, nullable=True) 
     
     
     # Champs provenant du rapport STATUS.json de l'agent

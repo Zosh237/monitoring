@@ -10,6 +10,7 @@ class JobStatusEnum(str, enum.Enum):
     MISSING = "MISSING"        # Sauvegarde manquante
     HASH_MISMATCH = "HASH_MISMATCH"  # Hachage ne correspondant pas
     FAILED = "FAILED"
+    UNCHANGED = "UNCHANGED"
 
 # Schéma de base pour ExpectedBackupJob, utilisé pour la création et la modification via l'API
 class ExpectedBackupJobBase(BaseModel):
