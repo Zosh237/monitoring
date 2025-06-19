@@ -63,6 +63,7 @@ def process_expected_job(job, databases_data, agent_databases_folder, agent_id, 
     status = "MISSING"
     message = ""
 
+    
     if job.database_name in databases_data:
         data = databases_data[job.database_name]
         staged_file_name = data.get("staged_file_name")
@@ -79,7 +80,13 @@ def process_expected_job(job, databases_data, agent_databases_folder, agent_id, 
                 elif job.calculated_hash is None or job.calculated_hash != computed_hash:
                     status = "SUCCESS"
                     job.calculated_hash = computed_hash
-                    message = "Backup validé et mis à jour."
+                    ###CHANGEMENT
+                    if not job.previous_successful_hash_global:
+                        job.previous_successful_hash_global = computed_hash
+                        message = "Backup validé (premier succès)."
+                        print(f"🔐 Premier succès — hash de référence enregistré pour {job.database_name}")
+                    else:
+                        message = "Backup validé et mis à jour."
                     try:
                         validated_path = os.path.join(settings.VALIDATED_BACKUPS_BASE_PATH, staged_file_name)
                         shutil.copy2(backup_file_path, validated_path)
@@ -109,8 +116,8 @@ def process_expected_job(job, databases_data, agent_databases_folder, agent_id, 
         timestamp=now,
         status=status,
         message=message,
-        calculated_hash=expected_hash, #computed_hash or "",
-        #expected_hash = expected_hash
+        calculated_hash=computed_hash or "",
+        #expected_hash = job.previous_successful_hash_global or "",
         operation_log_file_name=operation_log_file_name,
         agent_id=agent_id,
         agent_overall_status=agent_status,
@@ -127,7 +134,7 @@ def process_expected_job(job, databases_data, agent_databases_folder, agent_id, 
     if status != "SUCCESS":
         try:
             print(f"************ DEBUT NOTIFICATION *************")
-            notify_backup_status_change(job, backup_entry)
+            notify_backup_status_change(job, backup_entry, expected_hash)
         except NotificationError as e:
             print(f"Echec de l'envoi de la notification {e}")
         except Exception as e:

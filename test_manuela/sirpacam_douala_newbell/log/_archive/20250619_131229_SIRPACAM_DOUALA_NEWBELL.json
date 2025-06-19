@@ -1,0 +1,12 @@
+{
+  "agent_id": "sirpacam_douala_newbell",
+  "overall_status": "OK",
+  "databases": {
+    "SIRPACAM_DOUALA_2024": {
+      "staged_file_name": "sirpacam_douala_2024.sql.gz",
+      "COMPRESS": {
+        "sha256_checksum": "2fa17e3e26264d04d6d3e7c99db97afc63a07b0995e5b2270cda9ff2ffb3c0ce"
+      }
+    }
+  }
+}

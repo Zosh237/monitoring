@@ -55,12 +55,6 @@ class Settings(BaseSettings):
         env="MAX_STATUS_FILE_AGE_DAYS"
     )
 
-    # Jours de la semaine où les sauvegardes sont attendues (ex: MO, TU, WE, TH, FR, SA, SU)
-    EXPECTED_BACKUP_DAYS_OF_WEEK: List[str] = Field(
-        ["MO", "TU", "WE", "TH", "FR", "SA"],
-        env="EXPECTED_BACKUP_DAYS_OF_WEEK"
-    )
-
     # Fuseau horaire par défaut de l'application pour les opérations temporelles si non spécifié en UTC
     APP_TIMEZONE: str = Field(
         "UTC",
@@ -69,7 +63,11 @@ class Settings(BaseSettings):
 
     # Paramètres pour les notifications par e-mail
     EMAIL_HOST: Optional[str] = os.getenv("EMAIL_HOST")
-    EMAIL_PORT: int = int(os.getenv("EMAIL_PORT", "587"))  # Port par défaut pour TLS
+    try:
+        EMAIL_PORT: int = int(os.getenv("EMAIL_PORT", 587) )
+    except ValueError:
+        EMAIL_PORT:int = 587
+
     EMAIL_USERNAME: Optional[str] = os.getenv("EMAIL_USERNAME")
     EMAIL_PASSWORD: Optional[str] = os.getenv("EMAIL_PASSWORD")
     EMAIL_SENDER: Optional[str] = os.getenv("EMAIL_SENDER")

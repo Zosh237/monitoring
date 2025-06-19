@@ -9,6 +9,7 @@ class BackupEntryStatusEnum(str, enum.Enum):
     SUCCESS = "SUCCESS"        # Sauvegarde validée avec succès
     MISSING = "MISSING"        # Sauvegarde introuvable
     HASH_MISMATCH = "HASH_MISMATCH"  # Erreur de validation de hachage
+    FAILDE = "FAILED"
 
 # Schéma de base pour une BackupEntry, centralisant les informations essentielles
 class BackupEntryBase(BaseModel):

@@ -63,7 +63,8 @@ def send_email_notification(
 
 def notify_backup_status_change(
     job: ExpectedBackupJob,
-    backup_entry: BackupEntry
+    backup_entry: BackupEntry,
+    expected_hash: Optional[str]
 ):
     """
     Compose et envoie une notification par e-mail en cas de changement critique du statut de sauvegarde.
@@ -97,7 +98,8 @@ def notify_backup_status_change(
         f"  Statut de l'entrée     : {backup_entry.status.upper()}\n"
         #f"  Horodatage Agent       : {backup_entry.agent_report_timestamp_utc.isoformat() if backup_entry.agent_report_timestamp_utc else 'N/A'}\n"
         #f"  Message d'erreur Agent : {backup_entry.agent_transfer_error_message or 'Aucun message spécifique de l\'agent.'}\n"
-        f"  Hachage Attendu (Agent): {backup_entry.calculated_hash or 'N/A'}\n"
+        f"  Hachage Attendu (Agent): {expected_hash or 'N/A'}\n"
+        #{backup_entry.calculated_hash or 'N/A'}
         f"  Hachage Calculé (Serveur): {backup_entry.server_calculated_staged_hash or 'N/A'}\n"
         #f"  Taille Agent (octets)  : {backup_entry.agent_reported_size_bytes or 'N/A'}\n"
         #f"  Taille Calculée (Serveur): {backup_entry.server_calculated_staged_size or 'N/A'}\n"

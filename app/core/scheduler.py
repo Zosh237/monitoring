@@ -37,7 +37,9 @@ def start_scheduler():
             minutes=settings.SCANNER_INTERVAL_MINUTES,
             id='backup_scanner_main_job',
             replace_existing=True,
-            # misfire_grace_time=60  # Facultatif, permet au job de s'exécuter jusqu'à 60 secondes après l'heure prévue
+            misfire_grace_time=90,  # Facultatif, permet au job de s'exécuter jusqu'à 60 secondes après l'heure prévue
+            max_instances=1,
+            coalesce=True,
         )
         logger.info(f"Job 'backup_scanner_main_job' ajouté au planificateur. Intervalle : {settings.SCANNER_INTERVAL_MINUTES} minutes.")
         scheduler.start()
