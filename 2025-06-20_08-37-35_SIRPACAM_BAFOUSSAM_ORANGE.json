@@ -1,0 +1,467 @@
+{
+    "operation_start_time": "2025-06-20 08:10:40.262965",
+    "operation_end_time": "2025-06-20 08:37:35.142592",
+    "agent_id": "SIRPACAM_BAFOUSSAM_ORANGE",
+    "databases": {
+        "EL_HADJ_BAFOUSSAM_2025": {
+            "BACKUP": {
+                "status": "True",
+                "start_time": "2025-06-20 08:10:40.264128",
+                "end_time": "2025-06-20 08:10:51.762465",
+                "sha256": "a64e0b8f34fe1506076794d9398937a3ce4f7a61c6ab2dbeec1af549a044242e",
+                "size": "62233088"
+            },
+            "COMPRESS": {
+                "status": "True",
+                "start_time": "2025-06-20 08:27:03.282433",
+                "end_time": "2025-06-20 08:27:21.496913",
+                "sha256": "292394b639b625ea7e1a79cd1a2a122c16b6e0955b20095ca693751656b6739f",
+                "size": "4386338"
+            },
+            "TRANSFER": {
+                "status": "True",
+                "start_time": "2025-06-20 08:37:21.031236",
+                "end_time": "2025-06-20 08:37:22.503596",
+                "error_message": "null"
+            },
+            "staged_file_name": "/home/lam/Backup/EL_HADJ_BAFOUSSAM_2025.zst"
+        },
+        "SDMC_BAFOUSSAM_2025": {
+            "BACKUP": {
+                "status": "True",
+                "start_time": "2025-06-20 08:10:40.264756",
+                "end_time": "2025-06-20 08:11:03.342145",
+                "sha256": "bbd67664d113c58aa8a4a84116fa16f3b6178830c3e7ee4e997507f075fe7fef",
+                "size": "74490368"
+            },
+            "COMPRESS": {
+                "status": "True",
+                "start_time": "2025-06-20 08:31:52.185751",
+                "end_time": "2025-06-20 08:32:14.992493",
+                "sha256": "bb73d384175e99aecec562fd92684e9fc2d06e306b530c8e1930d9dc72087d50",
+                "size": "5720306"
+            },
+            "TRANSFER": {
+                "status": "True",
+                "start_time": "2025-06-20 08:36:58.080855",
+                "end_time": "2025-06-20 08:36:59.988728",
+                "error_message": "null"
+            },
+            "staged_file_name": "/home/lam/Backup/SDMC_BAFOUSSAM_2025.zst"
+        },
+        "SDMC_BAFOUSSAM_AVARIES_2025": {
+            "BACKUP": {
+                "status": "True",
+                "start_time": "2025-06-20 08:10:40.265301",
+                "end_time": "2025-06-20 08:10:55.888069",
+                "sha256": "0f8a08fb70a77e7eca591e2ba8504d6b54f8187abe5d44f6a05ace48be14035b",
+                "size": "67671552"
+            },
+            "COMPRESS": {
+                "status": "True",
+                "start_time": "2025-06-20 08:34:41.496391",
+                "end_time": "2025-06-20 08:35:01.357802",
+                "sha256": "d5785ed88caa578a6c7fa22e334092bafb10801f3cdc824f742a61720b7eeef4",
+                "size": "4829113"
+            },
+            "TRANSFER": {
+                "status": "True",
+                "start_time": "2025-06-20 08:37:22.503630",
+                "end_time": "2025-06-20 08:37:24.229914",
+                "error_message": "null"
+            },
+            "staged_file_name": "/home/lam/Backup/SDMC_BAFOUSSAM_AVARIES_2025.zst"
+        },
+        "SDMC_BAFOUSSAM_DETAIL_2025": {
+            "BACKUP": {
+                "status": "True",
+                "start_time": "2025-06-20 08:10:40.265870",
+                "end_time": "2025-06-20 08:11:03.540255",
+                "sha256": "d41b811b8b88eed2490f0a0ae02432c52027fdb0029cc5906d18796fa0be44c6",
+                "size": "69247488"
+            },
+            "COMPRESS": {
+                "status": "True",
+                "start_time": "2025-06-20 08:28:48.912346",
+                "end_time": "2025-06-20 08:29:09.817154",
+                "sha256": "7fde799989aa620048c4a2cc85a367613ef43152cbbc1db4e78c754357775761",
+                "size": "5200796"
+            },
+            "TRANSFER": {
+                "status": "True",
+                "start_time": "2025-06-20 08:37:19.449178",
+                "end_time": "2025-06-20 08:37:21.031204",
+                "error_message": "null"
+            },
+            "staged_file_name": "/home/lam/Backup/SDMC_BAFOUSSAM_DETAIL_2025.zst"
+        },
+        "SDMC_BAFOUSSAM_SUCRE_2025": {
+            "BACKUP": {
+                "status": "True",
+                "start_time": "2025-06-20 08:10:40.266638",
+                "end_time": "2025-06-20 08:10:54.856896",
+                "sha256": "cc848dd5da46c66253ea607fa569a02ac7fd66b5729772326d98890bb57bcbb0",
+                "size": "66512384"
+            },
+            "COMPRESS": {
+                "status": "True",
+                "start_time": "2025-06-20 08:25:03.437156",
+                "end_time": "2025-06-20 08:25:23.719202",
+                "sha256": "141ab312ff94709a94bd55dc39367093e42d74fbacbacdb5e07d6340f1cf9700",
+                "size": "4673377"
+            },
+            "TRANSFER": {
+                "status": "True",
+                "start_time": "2025-06-20 08:37:05.675172",
+                "end_time": "2025-06-20 08:37:07.229073",
+                "error_message": "null"
+            },
+            "staged_file_name": "/home/lam/Backup/SDMC_BAFOUSSAM_SUCRE_2025.zst"
+        },
+        "SIRPACAM_BAFOUSSAM_2025": {
+            "BACKUP": {
+                "status": "True",
+                "start_time": "2025-06-20 08:10:40.267477",
+                "end_time": "2025-06-20 08:11:34.676015",
+                "sha256": "a14d64c7ef8912f76cebf68e65d91435b7826a68ba00ba06dd944b575a1df5fe",
+                "size": "128428544"
+            },
+            "COMPRESS": {
+                "status": "True",
+                "start_time": "2025-06-20 08:26:19.321163",
+                "end_time": "2025-06-20 08:27:03.015274",
+                "sha256": "d0e53209105f64afb54fb1f6456c62d80e451a1ab9a58458458a9239e61d2b64",
+                "size": "11697814"
+            },
+            "TRANSFER": {
+                "status": "True",
+                "start_time": "2025-06-20 08:37:33.269803",
+                "end_time": "2025-06-20 08:37:35.142573",
+                "error_message": "null"
+            },
+            "staged_file_name": "/home/lam/Backup/SIRPACAM_BAFOUSSAM_2025.zst"
+        },
+        "SIRPACAM_BAFOUSSAM_AVARIES_2025": {
+            "BACKUP": {
+                "status": "True",
+                "start_time": "2025-06-20 08:10:40.268427",
+                "end_time": "2025-06-20 08:11:15.331639",
+                "sha256": "1c9a6af8ca3d47c35a3aa9d8364869a1d1479206ca606595ddd87fd27faf96ca",
+                "size": "108205568"
+            },
+            "COMPRESS": {
+                "status": "True",
+                "start_time": "2025-06-20 08:25:45.755243",
+                "end_time": "2025-06-20 08:26:18.758865",
+                "sha256": "355729af27e740a54a799b5049ea23efb7ad6d8bbd8142014d467122ba5735ab",
+                "size": "8502908"
+            },
+            "TRANSFER": {
+                "status": "True",
+                "start_time": "2025-06-20 08:37:15.613295",
+                "end_time": "2025-06-20 08:37:17.444559",
+                "error_message": "null"
+            },
+            "staged_file_name": "/home/lam/Backup/SIRPACAM_BAFOUSSAM_AVARIES_2025.zst"
+        },
+        "SIRPACAM_BAFOUSSAM_DETAIL_2025": {
+            "BACKUP": {
+                "status": "True",
+                "start_time": "2025-06-20 08:10:40.269512",
+                "end_time": "2025-06-20 08:11:35.592018",
+                "sha256": "ef44009bd604c67984fd095aea36f1509ba565b5485dbfc57c754283d4f20eb1",
+                "size": "122132992"
+            },
+            "COMPRESS": {
+                "status": "True",
+                "start_time": "2025-06-20 08:29:10.346399",
+                "end_time": "2025-06-20 08:29:52.206353",
+                "sha256": "a9298f82ba63efbf08c1393616f7676a7cd9c4e2b3afb06c2a3aef25f622a5b7",
+                "size": "10522678"
+            },
+            "TRANSFER": {
+                "status": "True",
+                "start_time": "2025-06-20 08:37:27.299151",
+                "end_time": "2025-06-20 08:37:29.186384",
+                "error_message": "null"
+            },
+            "staged_file_name": "/home/lam/Backup/SIRPACAM_BAFOUSSAM_DETAIL_2025.zst"
+        },
+        "SIRPACAM_BAFOUSSAM_INFO_2025": {
+            "BACKUP": {
+                "status": "True",
+                "start_time": "2025-06-20 08:10:40.270696",
+                "end_time": "2025-06-20 08:10:55.656850",
+                "sha256": "dbe3f12a3b43885aec001401bdac8917a3cae8909746f8ffe373126de8c96053",
+                "size": "71641600"
+            },
+            "COMPRESS": {
+                "status": "True",
+                "start_time": "2025-06-20 08:35:56.290570",
+                "end_time": "2025-06-20 08:36:21.696869",
+                "sha256": "68ea5c191f63e662f02751eb44cf1ce98d152fa5db30b55caa7343f491df6768",
+                "size": "5743823"
+            },
+            "TRANSFER": {
+                "status": "True",
+                "start_time": "2025-06-20 08:37:25.722947",
+                "end_time": "2025-06-20 08:37:27.299118",
+                "error_message": "null"
+            },
+            "staged_file_name": "/home/lam/Backup/SIRPACAM_BAFOUSSAM_INFO_2025.zst"
+        },
+        "SIRPACAM_BAFOUSSAM_SUCRE_2025": {
+            "BACKUP": {
+                "status": "True",
+                "start_time": "2025-06-20 08:10:40.272668",
+                "end_time": "2025-06-20 08:11:13.463043",
+                "sha256": "8288b30d615abff1acebc289be37f77f9d4152fefb84798c1efbdf76c96fd754",
+                "size": "99564032"
+            },
+            "COMPRESS": {
+                "status": "True",
+                "start_time": "2025-06-20 08:36:22.134762",
+                "end_time": "2025-06-20 08:36:55.219650",
+                "sha256": "37f3d8552cf02a3f10e9fb046309ce69bc4718d34a9043783b8caeb24e37f4c1",
+                "size": "7465240"
+            },
+            "TRANSFER": {
+                "status": "True",
+                "start_time": "2025-06-20 08:37:08.919512",
+                "end_time": "2025-06-20 08:37:10.627109",
+                "error_message": "null"
+            },
+            "staged_file_name": "/home/lam/Backup/SIRPACAM_BAFOUSSAM_SUCRE_2025.zst"
+        },
+        "SOCIA_BLU_BAFOUSSAM_2025": {
+            "BACKUP": {
+                "status": "True",
+                "start_time": "2025-06-20 08:10:40.273722",
+                "end_time": "2025-06-20 08:10:54.699387",
+                "sha256": "283a5685ac2eb954bfca45c6a1ccbe62f008206654d9c5b67ead14cc1793571d",
+                "size": "59086336"
+            },
+            "COMPRESS": {
+                "status": "True",
+                "start_time": "2025-06-20 08:27:37.733294",
+                "end_time": "2025-06-20 08:27:56.138984",
+                "sha256": "cd89b3bdc5264fe8571d1df41ef323f24fe60cce3b8fc3e5471eebd15a2ded49",
+                "size": "4006748"
+            },
+            "TRANSFER": {
+                "status": "True",
+                "start_time": "2025-06-20 08:36:59.988750",
+                "end_time": "2025-06-20 08:37:01.565147",
+                "error_message": "null"
+            },
+            "staged_file_name": "/home/lam/Backup/SOCIA_BLU_BAFOUSSAM_2025.zst"
+        },
+        "SOCIA_BLU_DETAIL_BAF_2025": {
+            "BACKUP": {
+                "status": "True",
+                "start_time": "2025-06-20 08:10:40.274599",
+                "end_time": "2025-06-20 08:10:49.974964",
+                "sha256": "a1b1aa4eb79e8dca8a19cefba028e3959a6daac180b10f4f8c8c8c81d52d2a77",
+                "size": "56681984"
+            },
+            "COMPRESS": {
+                "status": "True",
+                "start_time": "2025-06-20 08:35:39.554135",
+                "end_time": "2025-06-20 08:35:55.980664",
+                "sha256": "a02d1fd1f0e71bf8c6bc61f19c1080d05d9bdcbdf4aec495d419a84d5a0faf58",
+                "size": "3811983"
+            },
+            "TRANSFER": {
+                "status": "True",
+                "start_time": "2025-06-20 08:37:24.229947",
+                "end_time": "2025-06-20 08:37:25.722914",
+                "error_message": "null"
+            },
+            "staged_file_name": "/home/lam/Backup/SOCIA_BLU_DETAIL_BAF_2025.zst"
+        },
+        "SOCIA_EXO_BAFOUSSAM_2025": {
+            "BACKUP": {
+                "status": "True",
+                "start_time": "2025-06-20 08:10:40.275547",
+                "end_time": "2025-06-20 08:11:05.262953",
+                "sha256": "8935b7f77db20f6bd68df3326a0efcce06428f96efdad729e5586f4a670b78ab",
+                "size": "70429184"
+            },
+            "COMPRESS": {
+                "status": "True",
+                "start_time": "2025-06-20 08:25:24.025757",
+                "end_time": "2025-06-20 08:25:45.292259",
+                "sha256": "f74ac631f53323751b14da6030fc5481811037ae61c45ee4bffcba6b5c99f8d4",
+                "size": "5253934"
+            },
+            "TRANSFER": {
+                "status": "True",
+                "start_time": "2025-06-20 08:37:07.229092",
+                "end_time": "2025-06-20 08:37:08.919479",
+                "error_message": "null"
+            },
+            "staged_file_name": "/home/lam/Backup/SOCIA_EXO_BAFOUSSAM_2025.zst"
+        },
+        "SOCIA_EXO_BAFOUSSAM_AVARIES_2025": {
+            "BACKUP": {
+                "status": "True",
+                "start_time": "2025-06-20 08:10:40.276227",
+                "end_time": "2025-06-20 08:10:50.024814",
+                "sha256": "747dda561507be07418bf9df19e94fb7572e32d7137039d04359ea7330610b90",
+                "size": "51091968"
+            },
+            "COMPRESS": {
+                "status": "True",
+                "start_time": "2025-06-20 08:27:21.717414",
+                "end_time": "2025-06-20 08:27:37.464115",
+                "sha256": "8c28600d8002aabdace2d190c9ca52fba10f86fa478f2285497ca5b3c3d3eb1b",
+                "size": "3541727"
+            },
+            "TRANSFER": {
+                "status": "True",
+                "start_time": "2025-06-20 08:36:56.135193",
+                "end_time": "2025-06-20 08:36:58.080816",
+                "error_message": "null"
+            },
+            "staged_file_name": "/home/lam/Backup/SOCIA_EXO_BAFOUSSAM_AVARIES_2025.zst"
+        },
+        "SOCIA_EXO_DETAIL_BAF_2025": {
+            "BACKUP": {
+                "status": "True",
+                "start_time": "2025-06-20 08:10:40.277597",
+                "end_time": "2025-06-20 08:11:48.851312",
+                "sha256": "8051d501b9b69c55181878c3669335bd3c3be4af8ba566d847a8b61fc8a21704",
+                "size": "101922304"
+            },
+            "COMPRESS": {
+                "status": "True",
+                "start_time": "2025-06-20 08:24:33.453018",
+                "end_time": "2025-06-20 08:25:03.152754",
+                "sha256": "fbedb3540dab8779a74e56151b8ff7482b8632aca8cff51ff401b2230bcc069b",
+                "size": "8826285"
+            },
+            "TRANSFER": {
+                "status": "True",
+                "start_time": "2025-06-20 08:37:12.126371",
+                "end_time": "2025-06-20 08:37:13.874640",
+                "error_message": "null"
+            },
+            "staged_file_name": "/home/lam/Backup/SOCIA_EXO_DETAIL_BAF_2025.zst"
+        },
+        "SOCIA_EXTRA_BAF_2025": {
+            "BACKUP": {
+                "status": "True",
+                "start_time": "2025-06-20 08:10:40.278600",
+                "end_time": "2025-06-20 08:11:00.287481",
+                "sha256": "509329598930646b6ec34d38c54592cf6ba830330688c975724c3777be0e4c6e",
+                "size": "63285760"
+            },
+            "COMPRESS": {
+                "status": "True",
+                "start_time": "2025-06-20 08:27:56.414009",
+                "end_time": "2025-06-20 08:28:14.716722",
+                "sha256": "6dc44782b99d167650f09d26213d33e47e13371598e0a0a739485fba8707d288",
+                "size": "4480451"
+            },
+            "TRANSFER": {
+                "status": "True",
+                "start_time": "2025-06-20 08:37:10.627147",
+                "end_time": "2025-06-20 08:37:12.126337",
+                "error_message": "null"
+            },
+            "staged_file_name": "/home/lam/Backup/SOCIA_EXTRA_BAF_2025.zst"
+        },
+        "SDMC_BAFOUSSAM_2023": {
+            "BACKUP": {
+                "status": "True",
+                "start_time": "2025-06-20 08:10:40.281521",
+                "end_time": "2025-06-20 08:11:19.403032",
+                "sha256": "fe0910895816a415b3518dc8369f2151d70ee4fefea99a2dc5af82d2f12b7824",
+                "size": "108897792"
+            },
+            "COMPRESS": {
+                "status": "True",
+                "start_time": "2025-06-20 08:28:15.183816",
+                "end_time": "2025-06-20 08:28:48.613401",
+                "sha256": "b700a1e89cbfd25fa53079e4bbd8593bacb9ccfda985bd9f5dd9d496ac3d1ae5",
+                "size": "9177755"
+            },
+            "TRANSFER": {
+                "status": "True",
+                "start_time": "2025-06-20 08:37:13.874687",
+                "end_time": "2025-06-20 08:37:15.613249",
+                "error_message": "null"
+            },
+            "staged_file_name": "/home/lam/Backup/SDMC_BAFOUSSAM_2023.zst"
+        },
+        "SDMC_BAFOUSSAM_2024": {
+            "BACKUP": {
+                "status": "True",
+                "start_time": "2025-06-20 08:10:40.283429",
+                "end_time": "2025-06-20 08:11:26.033059",
+                "sha256": "3213b6cb94762478e3f1d5668092332170f7564a1e309fcb96be5551cf0f2457",
+                "size": "122201600"
+            },
+            "COMPRESS": {
+                "status": "True",
+                "start_time": "2025-06-20 08:35:01.881714",
+                "end_time": "2025-06-20 08:35:39.306749",
+                "sha256": "bec25f070079667292448c6d050b818e20590224ff31716c031dd2060ab78e0a",
+                "size": "10863172"
+            },
+            "TRANSFER": {
+                "status": "True",
+                "start_time": "2025-06-20 08:37:17.444626",
+                "end_time": "2025-06-20 08:37:19.449145",
+                "error_message": "null"
+            },
+            "staged_file_name": "/home/lam/Backup/SDMC_BAFOUSSAM_2024.zst"
+        },
+        "SIRPACAM_BAFOUSSAM_2023": {
+            "BACKUP": {
+                "status": "True",
+                "start_time": "2025-06-20 08:10:40.285209",
+                "end_time": "2025-06-20 08:13:54.655807",
+                "sha256": "4f418a3a4397071264229562fa1737aa3a53d74595bf7010695eda8d75010595",
+                "size": "344524288"
+            },
+            "COMPRESS": {
+                "status": "True",
+                "start_time": "2025-06-20 08:29:53.704814",
+                "end_time": "2025-06-20 08:31:51.837813",
+                "sha256": "435b97b77b730ae66d9bea829872c599f27ef3b1de2c4ce0156f732ee162be50",
+                "size": "41688748"
+            },
+            "TRANSFER": {
+                "status": "True",
+                "start_time": "2025-06-20 08:37:01.565200",
+                "end_time": "2025-06-20 08:37:05.674989",
+                "error_message": "null"
+            },
+            "staged_file_name": "/home/lam/Backup/SIRPACAM_BAFOUSSAM_2023.zst"
+        },
+        "SIRPACAM_BAFOUSSAM_2024": {
+            "BACKUP": {
+                "status": "True",
+                "start_time": "2025-06-20 08:10:40.287501",
+                "end_time": "2025-06-20 08:14:32.854166",
+                "sha256": "bc85ed6468a76da1d45de39dcf612787e690a1c4134c7b05b7c4f4aa7fc5a135",
+                "size": "422708736"
+            },
+            "COMPRESS": {
+                "status": "True",
+                "start_time": "2025-06-20 08:32:16.841222",
+                "end_time": "2025-06-20 08:34:41.203721",
+                "sha256": "b097461fcecfcd91022afca89c404ea8672289742440e11f196cc7380b4a8dcb",
+                "size": "53311442"
+            },
+            "TRANSFER": {
+                "status": "True",
+                "start_time": "2025-06-20 08:37:29.186424",
+                "end_time": "2025-06-20 08:37:33.269773",
+                "error_message": "null"
+            },
+            "staged_file_name": "/home/lam/Backup/SIRPACAM_BAFOUSSAM_2024.zst"
+        }
+    }
+}

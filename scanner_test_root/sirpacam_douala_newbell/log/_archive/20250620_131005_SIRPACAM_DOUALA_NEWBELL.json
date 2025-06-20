@@ -1,0 +1,77 @@
+{
+  "operation_start_time": "2025-06-20T13:10:05.431056",
+  "operation_end_time": "2025-06-20T13:10:05.431056",
+  "agent_id": "sirpacam_douala_newbell",
+  "overall_status": "completed",
+  "databases": {
+    "SIRPACAM_DOUALA_2023": {
+      "BACKUP": {
+        "status": true,
+        "start_time": "2025-06-20T13:10:05.431056",
+        "end_time": "2025-06-20T13:10:05.431056",
+        "sha256_checksum": "placeholder-raw-hash",
+        "size": 188178944
+      },
+      "COMPRESS": {
+        "status": true,
+        "start_time": "2025-06-20T13:10:05.431056",
+        "end_time": "2025-06-20T13:10:05.431056",
+        "sha256_checksum": "a9f586cc26c782cfd4e8e352d8d60eb087c27f42686f887bcb3d874a4382a4af",
+        "size": 125
+      },
+      "TRANSFER": {
+        "status": true,
+        "start_time": "2025-06-20T13:10:05.431056",
+        "end_time": "2025-06-20T13:10:05.431056",
+        "error_message": null
+      },
+      "staged_file_name": "sirpacam_douala_2023.sql.gz"
+    },
+    "SIRPACAM_DOUALA_2024": {
+      "BACKUP": {
+        "status": true,
+        "start_time": "2025-06-20T13:10:05.431056",
+        "end_time": "2025-06-20T13:10:05.431056",
+        "sha256_checksum": "placeholder-raw-hash",
+        "size": 72885760
+      },
+      "COMPRESS": {
+        "status": true,
+        "start_time": "2025-06-20T13:10:05.431056",
+        "end_time": "2025-06-20T13:10:05.431056",
+        "sha256_checksum": "bd424f8ffe78263adc2d9763acfaf9d80cc9c9347cac21776703a760ad950209",
+        "size": 125
+      },
+      "TRANSFER": {
+        "status": true,
+        "start_time": "2025-06-20T13:10:05.431056",
+        "end_time": "2025-06-20T13:10:05.431056",
+        "error_message": null
+      },
+      "staged_file_name": "sirpacam_douala_2024.sql.gz"
+    },
+    "SIRPACAM_DOUALA_2025": {
+      "BACKUP": {
+        "status": true,
+        "start_time": "2025-06-20T13:10:05.431056",
+        "end_time": "2025-06-20T13:10:05.431056",
+        "sha256_checksum": "placeholder-raw-hash",
+        "size": 56817152
+      },
+      "COMPRESS": {
+        "status": true,
+        "start_time": "2025-06-20T13:10:05.431056",
+        "end_time": "2025-06-20T13:10:05.431056",
+        "sha256_checksum": "1db0114683ce124a9f3eb52007a04bab2c7c851ad429eafb30c1b52141baa301",
+        "size": 124
+      },
+      "TRANSFER": {
+        "status": true,
+        "start_time": "2025-06-20T13:10:05.431056",
+        "end_time": "2025-06-20T13:10:05.431056",
+        "error_message": null
+      },
+      "staged_file_name": "sirpacam_douala_2025.sql.gz"
+    }
+  }
+}

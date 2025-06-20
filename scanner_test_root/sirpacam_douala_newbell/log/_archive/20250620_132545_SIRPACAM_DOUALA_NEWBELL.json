@@ -1,0 +1,24 @@
+{
+  "agent_id": "sirpacam_douala_newbell",
+  "overall_status": "OK",
+  "databases": {
+    "SIRPACAM_DOUALA_2023": {
+      "staged_file_name": "sirpacam_douala_2023.sql.gz",
+      "COMPRESS": {
+        "sha256_checksum": "41fad169d98afba4d796073ba5fa46d227d92c92ecad180f5472a102a2121341"
+      }
+    },
+    "SIRPACAM_DOUALA_2024": {
+      "staged_file_name": "sirpacam_douala_2024.sql.gz",
+      "COMPRESS": {
+        "sha256_checksum": "3b1d91c80561a7ad8642fe71af3862af8e6504e56d85f0da7479e26a9b2429b1"
+      }
+    },
+    "SIRPACAM_DOUALA_2025": {
+      "staged_file_name": "sirpacam_douala_2025.sql.gz",
+      "COMPRESS": {
+        "sha256_checksum": "7e47edb92fba43a0faa2803aa2cd630a8b608fd76ccf0b9b8fe8f515a327d4f3"
+      }
+    }
+  }
+}
