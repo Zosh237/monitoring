@@ -12,6 +12,7 @@ services:
     volumes:
       - ./backup-data:/mnt/backups
       - ./validated-backups:/mnt/validated
+      - ./data/db:/monitoring/data/db
     ports:
       - "8000:8000"
     restart: always
