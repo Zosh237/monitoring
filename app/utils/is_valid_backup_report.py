@@ -49,14 +49,14 @@ def is_valid_backup_report(report: dict) -> bool:
 
         # Vérification section BACKUP
         backup = db_entry["BACKUP"]
-        for key in ["status", "start_time", "end_time", "sha256_checksum", "size"]:
+        for key in ["status", "start_time", "end_time",  "size"]: #, "sha256","sha256_checksum",
             if key not in backup:
                 print(f"❌ Champ '{key}' manquant dans BACKUP de '{db_key}'")
                 return False
 
         # Vérification section COMPRESS
         compress = db_entry["COMPRESS"]
-        for key in ["status", "start_time", "end_time", "sha256_checksum", "size"]:
+        for key in ["status", "start_time", "end_time", "size"]: #, "sha256","sha256_checksum"
             if key not in compress:
                 print(f"❌ Champ '{key}' manquant dans COMPRESS de '{db_key}'")
                 return False

@@ -10,6 +10,7 @@ project_root = os.path.abspath(os.path.join(current_dir, "..", ".."))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
+from scripts.stagged_file_name_filter import extraire_nom_fichier
 
 import shutil
 from datetime import datetime, timezone
@@ -44,11 +45,11 @@ def archive_report(json_path):
     Déplace le fichier JSON traité dans un sous-dossier "_archive" 
     du dossier parent (typiquement le dossier log de l'agent).
     """
+    print("**********DEBUT ARCHIVAGE*************")
     archive_folder = os.path.join(os.path.dirname(json_path), "_archive")
     os.makedirs(archive_folder, exist_ok=True)
     archived_path = os.path.join(archive_folder, os.path.basename(json_path))
     shutil.move(json_path, archived_path)
-    print(f"fonction archive ok")
 
     return archived_path
 
@@ -64,15 +65,15 @@ def process_expected_job(job, databases_data, agent_databases_folder, agent_id, 
 
     if job.database_name in databases_data:
         data = databases_data[job.database_name]
-        staged_file_name = data.get("staged_file_name")
+        staged_file_name = extraire_nom_fichier(data.get("staged_file_name"), [".zst", ".gz", ".db.sql"])
         compress_section = data.get("COMPRESS", {})
-        expected_hash = compress_section.get("sha256_checksum")
-
+        expected_hash = compress_section.get("sha256_checksum") if compress_section.get("sha256_checksum") else compress_section.get("sha256")
         backup_file_path = os.path.join(agent_databases_folder, staged_file_name)
+        print(f"*****BACKUP_FILE PATH :  {backup_file_path}")
         if os.path.exists(backup_file_path):
             try:
                 computed_hash = calculate_file_sha256(backup_file_path)
-                print(f"++++++computed_hash:{computed_hash} expected_hash:{expected_hash}+++++++++")
+                print(f"++++++computed_hash:{computed_hash}  -VS-  expected_hash:{expected_hash}+++++++++")
                 if computed_hash != expected_hash:
                     job.current_status = "FAILED"
                     message = "Hash calculé différent du hash déclaré dans le rapport."
@@ -85,7 +86,6 @@ def process_expected_job(job, databases_data, agent_databases_folder, agent_id, 
                             message = "Backup identique à la dernière version validée."
                         else:
                             job.current_status = "SUCCESS"
-                            
                             job.previous_successful_hash_global = computed_hash
                             message = "Nouveau backup validé avec contenu mis à jour."
                             try:
@@ -116,6 +116,7 @@ def process_expected_job(job, databases_data, agent_databases_folder, agent_id, 
     else:
         job.current_status = "MISSING"
         message = "Aucune entrée dans le rapport pour ce job."
+        expected_hash= "RAS"
 
     # Mise à jour du job
     job.last_checked_timestamp = now
@@ -158,7 +159,8 @@ def process_expected_job(job, databases_data, agent_databases_folder, agent_id, 
 # ------------------------------------------------------------------------------
 # Traitement complet d'un rapport JSON pour un agent donné
 # ------------------------------------------------------------------------------
-def process_agent_report(agent_log_json_path, agent_databases_folder, db_session):
+def process_agent_report(agent_log_json_path, agent_databases_folder, db_session, agent_name):
+    print(f"********DEBUT PROCESS AGENT REPORT**********")
     """
     Traite un rapport JSON d'un agent.
       - Charge le rapport depuis le dossier log.
@@ -183,13 +185,15 @@ def process_agent_report(agent_log_json_path, agent_databases_folder, db_session
 
     databases_data = report.get("databases", {})
 
-    active_jobs = db_session.query(ExpectedBackupJob).filter_by(is_active=True).all()
+    active_jobs = db_session.query(ExpectedBackupJob).filter_by(is_active=True, agent_id_responsible=agent_name).all()
+    #print(f"VOICI LES AGENS ********** : ++++++++++ : {active_jobs}")
 
     agent_id = report.get("agent_id")
     operation_log_file_name = os.path.basename(agent_log_json_path)
     agent_status = report.get("overall_status")
 
     for job in active_jobs:
+        print(f"**********DEBUT PROCESS EXPECTED JOB************")
         process_expected_job(
             job,
             databases_data,
@@ -200,8 +204,7 @@ def process_agent_report(agent_log_json_path, agent_databases_folder, db_session
             db_session
         )
     db_session.commit()
-    print(f"fonction process_agent ok")
-
+    
     archive_report(agent_log_json_path)
 
 # ------------------------------------------------------------------------------
@@ -210,6 +213,7 @@ def process_agent_report(agent_log_json_path, agent_databases_folder, db_session
 
 
 def process_all_agents(db_session):
+    print(f"*********DEBUT PROCESS ALL AGENTS*******")
     """
     Parcourt le dossier racine (défini par settings.BACKUP_STORAGE_ROOT) et pour chaque agent :
       - Récupère les dossiers 'log' et 'databases'.
@@ -221,20 +225,25 @@ def process_all_agents(db_session):
 
 
     for agent_name in os.listdir(root_folder):
-        print(f"*********2X  { os.listdir(root_folder) }  2X***********")
+        print(f"****{agent_name}*****2X  { os.listdir(root_folder) }  2X***********")
         agent_path = os.path.join(root_folder, agent_name)
-        print(f"*********3X  { os.listdir(agent_path) }  3X***********")
+        print(f"****{agent_name}*****3X  { os.listdir(agent_path) }  3X***********")
         if not os.path.isdir(agent_path):
             continue
         log_folder = os.path.join(agent_path, "log")
         databases_folder = os.path.join(agent_path, "databases")
         if not os.path.isdir(log_folder) or not os.path.isdir(databases_folder):
+            print(f"************/*/*/*/**/*/*/*/*/*/*/+++++++*//*/*/+++/*/*/*/*/++++")
+            print(f"⚠️ Dossiers manquants pour agent : {agent_name}")
+            print(f"  log_folder: {os.path.exists(log_folder)}, databases_folder: {os.path.exists(databases_folder)}")
+            print(f"************/*/*/*/**/*/*/*/*/*/*/+++++++*//*/*/+++/*/*/*/*/++++")
             continue
         for file_name in os.listdir(log_folder):
-            print(f"*********4X  { os.listdir(log_folder) }  4X***********")
+            print(f"****{agent_name}-{file_name}*****4X  { os.listdir(log_folder) }  4X***********")
             if file_name.lower().endswith(".json"):
                 agent_log_json_path = os.path.join(log_folder, file_name)
-                process_agent_report(agent_log_json_path, databases_folder, db_session)
+                print(f"***********DEBUT PROCESS_AGENT_REPORT agent: {agent_name}**************")
+                process_agent_report(agent_log_json_path, databases_folder, db_session, agent_name)
     
 
 

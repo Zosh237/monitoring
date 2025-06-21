@@ -37,6 +37,7 @@ logs/
 data/
 outputs/
 __results__/
+*.sql.gz
 
 # 🔹 CACHE & OUTILS DE DEV
 .ipynb_checkpoints/

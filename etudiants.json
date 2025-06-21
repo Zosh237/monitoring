@@ -1,0 +1,101 @@
+{
+  "etudiants": [
+    {
+      "matricule": "EPS2406",
+      "nom": "TOUKO FRANK ELVIS",
+      "notes": {
+        "ACTIVITE PHYSIQUE -SPORT POUR TOUS": {"CC": 9, "SN": 6.5, "Moy": 7.25, "Décision": "Non Validée", "Mention": "F"},
+        "TRAUMATOLOGIE ET PREMIERS SECOURS": {"CC": 8, "SN": 7, "Moy": 7.3, "Décision": "Non Validée", "Mention": "F"},
+        "DIDACTIQUE DE L'EPS II": {"CC": 9, "SN": 0, "Moy": 2.7, "Décision": "Non Validée", "Mention": "F"},
+        "ANATOMIE": {"CC": 9, "SN": 0, "Moy": 2.7, "Décision": "Non Validée", "Mention": "F"},
+        "DIDACTIQUE DES APS ATHLETISME": {"CC": 9, "SN": 0, "Moy": 2.7, "Décision": "Non Validée", "Mention": "F"},
+        "DIDACTIQUE DES APS BASKET": {"CC": 5, "SN": 0, "Moy": 1.5, "Décision": "Non Validée", "Mention": "F"},
+        "DIDACTIQUE DES APS DANSE": {"CC": 9, "SN": 0, "Moy": 2.7, "Décision": "Non Validée", "Mention": "F"},
+        "DIDACTIQUE DES APS GYMNASTIQUE": {"CC": 5, "SN": 0, "Moy": 1.5, "Décision": "Non Validée", "Mention": "F"},
+        "DIDACTIQUE DES APS VOLLEY": {"CC": 5, "SN": 0, "Moy": 1.5, "Décision": "Non Validée", "Mention": "F"},
+        "PEDAGOGIE PRATIQUE": {"CC": 9, "SN": 0, "Moy": 2.7, "Décision": "Non Validée", "Mention": "F"},
+        "OLYMPISME ETHIQUE ET DEONTOLOGIE": {"CC": 9, "SN": 0, "Moy": 2.7, "Décision": "Non Validée", "Mention": "F"},
+        "ENVIRONNEMENT JURIDIQUE ET EDUCATION CIVIQUE": {"CC": 18, "SN": 0, "Moy": 5.4, "Décision": "Non Validée", "Mention": "F"},
+        "DIDACTIQUE DES APS LUTTE": {"CC": 9, "SN": 0, "Moy": 2.7, "Décision": "Non Validée", "Mention": "F"}
+      }
+    },
+    {
+      "matricule": "EPS2402",
+      "nom": "BOYOGUINO NDAME YANN EMMANUEL",
+      "notes": {
+        "ACTIVITE PHYSIQUE -SPORT POUR TOUS": {"CC": 9, "SN": 6.5, "Moy": 7.25, "Décision": "Non Validée", "Mention": "F"},
+        "TRAUMATOLOGIE ET PREMIERS SECOURS": {"CC": 8, "SN": 7, "Moy": 7.3, "Décision": "Non Validée", "Mention": "F"},
+        "DIDACTIQUE DE L'EPS II": {"CC": 14, "SN": 14, "Moy": 14, "Décision": "Validée", "Mention": "B+"},
+        "ANATOMIE": {"CC": 9, "SN": 0, "Moy": 2.7, "Décision": "Non Validée", "Mention": "F"},
+        "DIDACTIQUE DES APS ATHLETISME": {"CC": 14, "SN": 14, "Moy": 14, "Décision": "Validée", "Mention": "B+"},
+        "DIDACTIQUE DES APS BASKET": {"CC": 7.5, "SN": 7.5, "Moy": 7.5, "Décision": "Non Validée", "Mention": "F"},
+        "DIDACTIQUE DES APS DANSE": {"CC": 10, "SN": 10, "Moy": 10, "Décision": "Validée", "Mention": "C"},
+        "DIDACTIQUE DES APS GYMNASTIQUE": {"CC": 6.5, "SN": 6.5, "Moy": 6.5, "Décision": "Non Validée", "Mention": "F"},
+        "DIDACTIQUE DES APS VOLLEY": {"CC": 1, "SN": 1, "Moy": 1, "Décision": "Non Validée", "Mention": "F"},
+        "PEDAGOGIE PRATIQUE": {"CC": 9, "SN": 0, "Moy": 2.7, "Décision": "Non Validée", "Mention": "F"},
+        "OLYMPISME ETHIQUE ET DEONTOLOGIE": {"CC": 9, "SN": 1, "Moy": 3.4, "Décision": "Non Validée", "Mention": "F"},
+        "ENVIRONNEMENT JURIDIQUE ET EDUCATION CIVIQUE": {"CC": 10, "SN": 0, "Moy": 3, "Décision": "Non Validée", "Mention": "F"},
+        "DIDACTIQUE DES APS LUTTE": {"CC": 5, "SN": 5, "Moy": 5, "Décision": "Non Validée", "Mention": "F"}
+      }
+    },
+    {
+      "matricule": "EPS2403",
+      "nom": "KAMDEM DJINDONG AKILAINE",
+      "notes": {
+        "ACTIVITE PHYSIQUE -SPORT POUR TOUS": {"CC": 17, "SN": 17, "Moy": 17, "Décision": "Validée", "Mention": "A"},
+        "TRAUMATOLOGIE ET PREMIERS SECOURS": {"CC": 15, "SN": 16, "Moy": 15.7, "Décision": "Validée", "Mention": "A-"},
+        "DIDACTIQUE DE L'EPS II": {"CC": 13, "SN": 12.5, "Moy": 12.65, "Décision": "Validée", "Mention": "B-"},
+        "ANATOMIE": {"CC": 15.5, "SN": 18, "Moy": 17.25, "Décision": "Validée", "Mention": "A"},
+        "DIDACTIQUE DES APS ATHLETISME": {"CC": 20, "SN": 20, "Moy": 20, "Décision": "Validée", "Mention": "A+"},
+        "DIDACTIQUE DES APS BASKET": {"CC": 16.5, "SN": 16.5, "Moy": 16.5, "Décision": "Validée", "Mention": "A"},
+        "DIDACTIQUE DES APS DANSE": {"CC": 19, "SN": 19, "Moy": 19, "Décision": "Validée", "Mention": "A+"},
+        "DIDACTIQUE DES APS GYMNASTIQUE": {"CC": 16.5, "SN": 16.5, "Moy": 16.5, "Décision": "Validée", "Mention": "A"},
+        "DIDACTIQUE DES APS VOLLEY": {"CC": 11, "SN": 11, "Moy": 11, "Décision": "Validée", "Mention": "C+"},
+        "PEDAGOGIE PRATIQUE": {"CC": 15, "SN": 15, "Moy": 15, "Décision": "Non Validée", "Mention": "A-"},
+        "OLYMPISME ETHIQUE ET DEONTOLOGIE": {"CC": 10, "SN": 10, "Moy": 10, "Décision": "Validée", "Mention": "C"},
+        "ENVIRONNEMENT JURIDIQUE ET EDUCATION CIVIQUE": {"CC": 5, "SN": 5, "Moy": 5, "Décision": "Non Validée", "Mention": "F"},
+        "DIDACTIQUE DES APS LUTTE": {"CC": 15, "SN": 15, "Moy": 15, "Décision": "Validée", "Mention": "A-"}
+    }
+    },
+
+    {
+  "matricule": "EPS2404",
+  "nom": "MISSI JEAN BERTIN CLAUDEL",
+  "notes": {
+    "ACTIVITE PHYSIQUE -SPORT POUR TOUS": {"CC": 19, "SN": 19, "Moy": 19, "Décision": "Validée", "Mention": "A+"},
+    "TRAUMATOLOGIE ET PREMIERS SECOURS": {"CC": 17, "SN": 17.5, "Moy": 17.35, "Décision": "Validée", "Mention": "A"},
+    "DIDACTIQUE DE L'EPS II": {"CC": 14, "SN": 14, "Moy": 14, "Décision": "Validée", "Mention": "B+"},
+    "ANATOMIE": {"CC": 16, "SN": 15, "Moy": 15.3, "Décision": "Validée", "Mention": "A-"},
+    "DIDACTIQUE DES APS ATHLETISME": {"CC": 20, "SN": 20, "Moy": 20, "Décision": "Validée", "Mention": "A+"},
+    "DIDACTIQUE DES APS BASKET": {"CC": 19, "SN": 19, "Moy": 19, "Décision": "Validée", "Mention": "A+"},
+    "DIDACTIQUE DES APS DANSE": {"CC": 16, "SN": 16, "Moy": 16, "Décision": "Validée", "Mention": "A"},
+    "DIDACTIQUE DES APS GYMNASTIQUE": {"CC": 17, "SN": 17, "Moy": 17, "Décision": "Validée", "Mention": "A"},
+    "DIDACTIQUE DES APS VOLLEY": {"CC": 17, "SN": 17, "Moy": 17, "Décision": "Validée", "Mention": "A"},
+    "PEDAGOGIE PRATIQUE": {"CC": 16, "SN": 16, "Moy": 16, "Décision": "Non Validée", "Mention": "A"},
+    "OLYMPISME ETHIQUE ET DEONTOLOGIE": {"CC": 14.5, "SN": 14.5, "Moy": 14.5, "Décision": "Validée", "Mention": "B+"},
+    "ENVIRONNEMENT JURIDIQUE ET EDUCATION CIVIQUE": {"CC": 6, "SN": 6, "Moy": 6, "Décision": "Non Validée", "Mention": "F"},
+    "DIDACTIQUE DES APS LUTTE": {"CC": 17, "SN": 17, "Moy": 17, "Décision": "Validée", "Mention": "A"}
+  }
+},
+    {
+    "matricule": "EPS2405",
+    "nom": "NYTSAMANE BEKALE MARYVONNE",
+    "notes": {
+        "ACTIVITE PHYSIQUE -SPORT POUR TOUS": {"CC": 15, "SN": 15, "Moy": 15, "Décision": "Validée", "Mention": "A-"},
+        "TRAUMATOLOGIE ET PREMIERS SECOURS": {"CC": 16.5, "SN": 15, "Moy": 15.45, "Décision": "Validée", "Mention": "A-"},
+        "DIDACTIQUE DE L'EPS II": {"CC": 16, "SN": 16, "Moy": 16, "Décision": "Validée", "Mention": "A"},
+        "ANATOMIE": {"CC": 16, "SN": 16, "Moy": 16, "Décision": "Validée", "Mention": "A"},
+        "DIDACTIQUE DES APS ATHLETISME": {"CC": 16, "SN": 16, "Moy": 16, "Décision": "Validée", "Mention": "A"},
+        "DIDACTIQUE DES APS BASKET": {"CC": 19, "SN": 19, "Moy": 19, "Décision": "Validée", "Mention": "A+"},
+        "DIDACTIQUE DES APS DANSE": {"CC": 17, "SN": 17, "Moy": 17, "Décision": "Validée", "Mention": "A"},
+        "DIDACTIQUE DES APS GYMNASTIQUE": {"CC": 17, "SN": 17, "Moy": 17, "Décision": "Validée", "Mention": "A"},
+        "DIDACTIQUE DES APS VOLLEY": {"CC": 11, "SN": 11, "Moy": 11, "Décision": "Validée", "Mention": "C+"},
+        "PEDAGOGIE PRATIQUE": {"CC": 14, "SN": 14, "Moy": 14, "Décision": "Non Validée", "Mention": "B+"},
+        "OLYMPISME ETHIQUE ET DEONTOLOGIE": {"CC": 14, "SN": 14, "Moy": 14, "Décision": "Validée", "Mention": "B+"},
+        "ENVIRONNEMENT JURIDIQUE ET EDUCATION CIVIQUE": {"CC": 10, "SN": 10, "Moy": 10, "Décision": "Validée", "Mention": "C"},
+        "DIDACTIQUE DES APS LUTTE": {"CC": 16, "SN": 16, "Moy": 16, "Décision": "Validée", "Mention": "A"}
+    }
+    }
+]
+}
+
